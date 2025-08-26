@@ -1,0 +1,642 @@
+{% extends "base.html" %}
+{% block title %}POC Requests{% endblock %}
+
+{% block css %}
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap');
+
+    .requests-section {
+        padding: 80px 0 120px;
+        position: relative;
+        min-height: 100vh;
+    }
+
+    .requests-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 100%;
+        background-image: 
+            radial-gradient(circle at 25% 25%, rgba(59, 130, 246, 0.02) 0%, transparent 50%),
+            radial-gradient(circle at 75% 75%, rgba(99, 102, 241, 0.015) 0%, transparent 50%);
+        background-size: 900px 900px, 700px 700px;
+        pointer-events: none;
+        z-index: -1;
+    }
+
+    .glass-header {
+        font-family: 'Playfair Display', serif;
+        font-size: 4rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #1e40af, #3b82f6, #6366f1);
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-align: center;
+        margin-bottom: 4rem;
+        letter-spacing: -0.02em;
+        position: relative;
+        animation: slideInUp 0.8s ease-out;
+    }
+
+    .glass-header::after {
+        content: '';
+        position: absolute;
+        bottom: -20px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 140px;
+        height: 4px;
+        background: linear-gradient(90deg, #3b82f6, #6366f1, #8b5cf6);
+        border-radius: 2px;
+        box-shadow: 0 2px 15px rgba(59, 130, 246, 0.4);
+        animation: expandWidth 0.8s ease-out 0.5s both;
+    }
+
+    .requests-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 20px;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 25px;
+        margin-bottom: 3rem;
+        animation: slideInUp 0.8s ease-out 0.3s both;
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    .stat-card {
+        background: rgba(255, 255, 255, 0.08);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 20px;
+        padding: 25px;
+        text-align: center;
+        box-shadow: 
+            0 15px 30px rgba(0, 0, 0, 0.08),
+            inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .stat-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 
+            0 25px 50px rgba(0, 0, 0, 0.12),
+            0 12px 24px rgba(59, 130, 246, 0.1),
+            inset 0 1px 0 rgba(255, 255, 255, 0.25);
+        background: rgba(255, 255, 255, 0.12);
+    }
+
+    .stat-number {
+        font-family: 'Playfair Display', serif;
+        font-size: 2.5rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #3b82f6, #6366f1);
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+
+    .stat-label {
+        color: #64748b;
+        font-size: 1rem;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .glass-table-container {
+        background: rgba(255, 255, 255, 0.06);
+        backdrop-filter: blur(25px);
+        -webkit-backdrop-filter: blur(25px);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 28px;
+        box-shadow: 
+            0 30px 60px rgba(0, 0, 0, 0.1),
+            0 15px 30px rgba(0, 0, 0, 0.08),
+            inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        overflow: hidden;
+        position: relative;
+        animation: slideInUp 0.8s ease-out 0.5s both;
+        opacity: 0;
+        transform: translateY(40px);
+    }
+
+    .glass-table-container::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+        border-radius: 28px 28px 0 0;
+    }
+
+    .glass-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-family: 'Inter', sans-serif;
+        margin: 0;
+    }
+
+    .glass-table thead {
+        background: rgba(59, 130, 246, 0.1);
+        backdrop-filter: blur(15px);
+        -webkit-backdrop-filter: blur(15px);
+    }
+
+    .glass-table th {
+        padding: 20px 25px;
+        font-weight: 600;
+        font-size: 1rem;
+        background: linear-gradient(135deg, #1e40af, #3b82f6);
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-align: left;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        position: relative;
+    }
+
+    .glass-table th:not(:last-child)::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        right: 0;
+        transform: translateY(-50%);
+        width: 1px;
+        height: 20px;
+        background: rgba(255, 255, 255, 0.15);
+    }
+
+    .glass-table td {
+        padding: 18px 25px;
+        color: #475569;
+        font-size: 1rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        transition: all 0.3s ease;
+        vertical-align: middle;
+    }
+
+    .glass-table tbody tr {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+    }
+
+    .glass-table tbody tr:hover {
+        background: rgba(59, 130, 246, 0.04);
+        backdrop-filter: blur(15px);
+        -webkit-backdrop-filter: blur(15px);
+        transform: scale(1.01);
+    }
+
+    .glass-table tbody tr:hover td {
+        color: #334155;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    }
+
+    .id-cell {
+        font-family: 'Playfair Display', serif;
+        font-weight: 600;
+        background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-size: 1.1rem;
+    }
+
+    .name-cell {
+        font-weight: 600;
+        color: #1e293b;
+    }
+
+    .contact-cell {
+        font-family: 'Courier New', monospace;
+        font-weight: 500;
+        color: #059669;
+        font-size: 0.95rem;
+    }
+
+    .date-cell {
+        color: #64748b;
+        font-size: 0.9rem;
+        font-style: italic;
+    }
+
+    .no-requests {
+        text-align: center;
+        padding: 80px 40px;
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(25px);
+        -webkit-backdrop-filter: blur(25px);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 28px;
+        box-shadow: 
+            0 25px 50px rgba(0, 0, 0, 0.1),
+            inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        animation: slideInUp 0.8s ease-out 0.5s both;
+        opacity: 0;
+        transform: translateY(30px);
+        position: relative;
+    }
+
+    .no-requests::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+        border-radius: 28px 28px 0 0;
+    }
+
+    .no-requests-icon {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 2rem;
+        background: linear-gradient(135deg, #94a3b8, #cbd5e1);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        color: white;
+        box-shadow: 0 10px 20px rgba(148, 163, 184, 0.3);
+    }
+
+    .no-requests h3 {
+        font-family: 'Playfair Display', serif;
+        font-size: 2.2rem;
+        background: linear-gradient(135deg, #64748b, #94a3b8);
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 1rem;
+        font-weight: 600;
+    }
+
+    .no-requests p {
+        color: #64748b;
+        font-size: 1.1rem;
+        margin: 0;
+        line-height: 1.6;
+    }
+
+    .filter-section {
+        display: flex;
+        gap: 20px;
+        margin-bottom: 2rem;
+        align-items: center;
+        animation: slideInUp 0.8s ease-out 0.4s both;
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    .filter-input {
+        padding: 12px 20px;
+        background: rgba(255, 255, 255, 0.08);
+        backdrop-filter: blur(15px);
+        -webkit-backdrop-filter: blur(15px);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 12px;
+        color: #1e293b;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        min-width: 200px;
+    }
+
+    .filter-input:focus {
+        outline: none;
+        background: rgba(255, 255, 255, 0.12);
+        border-color: rgba(59, 130, 246, 0.4);
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    .filter-input::placeholder {
+        color: #94a3b8;
+    }
+
+    /* Floating animation */
+    @keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-8px); }
+    }
+
+    .glass-table-container {
+        animation: slideInUp 0.8s ease-out 0.5s both, float 10s ease-in-out 4s infinite;
+    }
+
+    /* Animation keyframes */
+    @keyframes slideInUp {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes expandWidth {
+        from {
+            width: 0;
+        }
+        to {
+            width: 140px;
+        }
+    }
+
+    /* Mobile responsiveness */
+    @media (max-width: 1200px) {
+        .requests-container {
+            padding: 0 15px;
+        }
+
+        .glass-table th,
+        .glass-table td {
+            padding: 15px 20px;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .requests-section {
+            padding: 60px 0 100px;
+        }
+
+        .glass-header {
+            font-size: 3rem;
+            margin-bottom: 3rem;
+        }
+
+        .glass-header::after {
+            width: 120px;
+        }
+
+        .stats-grid {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            padding: 20px 15px;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+        }
+
+        .filter-section {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 15px;
+        }
+
+        .filter-input {
+            min-width: unset;
+        }
+
+        .glass-table-container {
+            overflow-x: auto;
+        }
+
+        .glass-table {
+            min-width: 700px;
+        }
+
+        .glass-table th,
+        .glass-table td {
+            padding: 12px 15px;
+            font-size: 0.9rem;
+        }
+
+        .no-requests {
+            padding: 60px 30px;
+        }
+
+        .no-requests-icon {
+            width: 60px;
+            height: 60px;
+            font-size: 1.5rem;
+        }
+
+        .no-requests h3 {
+            font-size: 2rem;
+        }
+
+        .no-requests p {
+            font-size: 1rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .requests-section {
+            padding: 40px 0 80px;
+        }
+
+        .glass-header {
+            font-size: 2.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .glass-header::after {
+            width: 100px;
+        }
+
+        .requests-container {
+            padding: 0 10px;
+        }
+
+        .stats-grid {
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+
+        .stat-card {
+            padding: 18px 12px;
+        }
+
+        .stat-number {
+            font-size: 1.8rem;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+        }
+
+        .glass-table {
+            min-width: 600px;
+        }
+
+        .glass-table th,
+        .glass-table td {
+            padding: 10px 12px;
+            font-size: 0.85rem;
+        }
+
+        .no-requests {
+            padding: 40px 20px;
+        }
+
+        .no-requests-icon {
+            width: 50px;
+            height: 50px;
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .no-requests h3 {
+            font-size: 1.8rem;
+        }
+
+        .no-requests p {
+            font-size: 0.95rem;
+        }
+    }
+
+    @media (max-width: 375px) {
+        .glass-header {
+            font-size: 2.2rem;
+        }
+
+        .glass-header::after {
+            width: 80px;
+        }
+
+        .glass-table {
+            min-width: 550px;
+        }
+
+        .glass-table th,
+        .glass-table td {
+            padding: 8px 10px;
+            font-size: 0.8rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="requests-section">
+    <h1 class="glass-header">POC Requests</h1>
+    
+    <div class="requests-container">
+        {% if requests %}
+            <!-- Statistics Cards -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <span class="stat-number">{{ requests|length }}</span>
+                    <div class="stat-label">Total Requests</div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">{{ requests|selectattr("created_at")|list|length if requests|selectattr("created_at")|list else 0 }}</span>
+                    <div class="stat-label">This Month</div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">{{ requests|map(attribute='church')|select()|list|length }}</span>
+                    <div class="stat-label">With Church</div>
+                </div>
+            </div>
+
+            <!-- Filter Section -->
+            <div class="filter-section">
+                <input type="text" class="filter-input" placeholder="Search by name..." id="searchInput">
+                <input type="text" class="filter-input" placeholder="Filter by place..." id="placeFilter">
+            </div>
+
+            <!-- Requests Table -->
+            <div class="glass-table-container">
+                <table class="glass-table" id="requestsTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Place</th>
+                            <th>Church</th>
+                            <th>Contact</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for r in requests %}
+                        <tr>
+                            <td class="id-cell">{{ r.id }}</td>
+                            <td class="name-cell">{{ r.name }}</td>
+                            <td>{{ r.place }}</td>
+                            <td>{{ r.church if r.church else '—' }}</td>
+                            <td class="contact-cell">{{ r.contact }}</td>
+                            <td class="date-cell">{{ r.created_at.strftime('%d %b %Y') if r.created_at else '—' }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="no-requests">
+                <div class="no-requests-icon">📋</div>
+                <h3>No Requests Yet</h3>
+                <p>When people submit POC requests, they will appear here for you to review and manage.</p>
+            </div>
+        {% endif %}
+    </div>
+</section>
+
+<script>
+// Simple search and filter functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('searchInput');
+    const placeFilter = document.getElementById('placeFilter');
+    const table = document.getElementById('requestsTable');
+    
+    if (searchInput && table) {
+        function filterTable() {
+            const searchTerm = searchInput.value.toLowerCase();
+            const placeTerm = placeFilter ? placeFilter.value.toLowerCase() : '';
+            const rows = table.querySelectorAll('tbody tr');
+            
+            rows.forEach(row => {
+                const name = row.children[1].textContent.toLowerCase();
+                const place = row.children[2].textContent.toLowerCase();
+                
+                const matchesSearch = name.includes(searchTerm);
+                const matchesPlace = place.includes(placeTerm);
+                
+                if (matchesSearch && matchesPlace) {
+                    row.style.display = '';
+                    row.style.animation = 'slideInUp 0.3s ease-out';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+        
+        searchInput.addEventListener('input', filterTable);
+        if (placeFilter) {
+            placeFilter.addEventListener('input', filterTable);
+        }
+    }
+});
+</script>
+{% endblock %}

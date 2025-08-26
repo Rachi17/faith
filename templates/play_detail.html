@@ -1,0 +1,678 @@
+{% extends 'base.html' %}
+{% block title %}{{ play.title }}{% endblock %}
+
+{% block css %}
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap');
+
+    body {
+        background: linear-gradient(135deg, 
+            #1a237e 0%, 
+            #283593 25%, 
+            #3949ab 50%, 
+            #5c6bc0 75%, 
+            #7986cb 100%);
+        min-height: 100vh;
+        position: relative;
+        overflow-x: hidden;
+    }
+
+    body::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-image: 
+            radial-gradient(circle at 20% 20%, rgba(255, 193, 7, 0.1) 0%, transparent 40%),
+            radial-gradient(circle at 80% 80%, rgba(76, 175, 80, 0.08) 0%, transparent 40%),
+            radial-gradient(circle at 40% 60%, rgba(233, 30, 99, 0.06) 0%, transparent 40%);
+        background-size: 800px 800px, 600px 600px, 400px 400px;
+        animation: backgroundFlow 20s ease-in-out infinite;
+        pointer-events: none;
+        z-index: -2;
+    }
+
+    .swirl-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-image: 
+            url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M30 30c0-16.569 13.431-30 30-30v60c-16.569 0-30-13.431-30-30zM0 30c0 16.569 13.431 30 30 30V0C13.431 0 0 13.431 0 30z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        opacity: 0.4;
+        animation: swirlRotate 60s linear infinite;
+        pointer-events: none;
+        z-index: -1;
+    }
+
+    .play-detail-section {
+        padding: 60px 0 80px;
+        position: relative;
+        z-index: 1;
+    }
+
+    .main-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+    }
+
+    /* Hero Header */
+    .play-hero {
+        text-align: center;
+        margin-bottom: 80px;
+        position: relative;
+    }
+
+    .play-hero::before {
+        content: '';
+        position: absolute;
+        top: -50px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 200px;
+        height: 200px;
+        background: radial-gradient(circle, rgba(255, 193, 7, 0.2) 0%, transparent 70%);
+        border-radius: 50%;
+        filter: blur(40px);
+        animation: pulseGlow 4s ease-in-out infinite alternate;
+        z-index: -1;
+    }
+
+    .play-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 4.5rem;
+        font-weight: 800;
+        background: linear-gradient(45deg, #ffd700, #ffeb3b, #fff59d, #ffecb3);
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+        margin-bottom: 2rem;
+        letter-spacing: -0.02em;
+        position: relative;
+        animation: titleFloat 6s ease-in-out infinite;
+    }
+
+    .play-subtitle {
+        font-family: 'Crimson Text', serif;
+        font-size: 1.4rem;
+        color: rgba(255, 255, 255, 0.85);
+        font-style: italic;
+        letter-spacing: 0.5px;
+        margin-bottom: 3rem;
+        opacity: 0;
+        animation: fadeInUp 1s ease-out 0.5s forwards;
+    }
+
+    /* Main Content Card */
+    .art-gallery-card {
+        background: rgba(255, 255, 255, 0.08);
+        backdrop-filter: blur(30px);
+        -webkit-backdrop-filter: blur(30px);
+        border: 2px solid rgba(255, 255, 255, 0.15);
+        border-radius: 32px;
+        box-shadow: 
+            0 32px 64px rgba(0, 0, 0, 0.25),
+            0 16px 32px rgba(0, 0, 0, 0.15),
+            inset 0 1px 0 rgba(255, 255, 255, 0.2),
+            inset 0 -1px 0 rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        position: relative;
+        margin-bottom: 60px;
+        animation: cardSlideIn 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        opacity: 0;
+        transform: translateY(60px);
+    }
+
+    .art-gallery-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.6), rgba(255, 193, 7, 0.6), transparent);
+        animation: shimmer 3s ease-in-out infinite;
+    }
+
+    /* Image Frame */
+    .frame-container {
+        padding: 40px;
+        position: relative;
+    }
+
+    .artwork-frame {
+        position: relative;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 
+            0 0 0 8px rgba(139, 69, 19, 0.6),
+            0 0 0 12px rgba(160, 82, 45, 0.4),
+            0 0 0 16px rgba(205, 133, 63, 0.3),
+            0 20px 40px rgba(0, 0, 0, 0.3);
+        background: linear-gradient(45deg, #8b4513, #a0522d, #cd853f);
+        animation: frameGlow 4s ease-in-out infinite alternate;
+    }
+
+    .artwork-frame::before {
+        content: '';
+        position: absolute;
+        top: -4px;
+        left: -4px;
+        right: -4px;
+        bottom: -4px;
+        background: linear-gradient(45deg, #daa520, #ffd700, #ffeb3b, #daa520);
+        border-radius: 24px;
+        z-index: -1;
+        opacity: 0.7;
+    }
+
+    .play-artwork {
+        width: 100%;
+        max-height: 600px;
+        object-fit: cover;
+        display: block;
+        transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        filter: contrast(1.1) saturate(1.2) brightness(1.05);
+    }
+
+    .artwork-frame:hover .play-artwork {
+        transform: scale(1.05);
+        filter: contrast(1.2) saturate(1.4) brightness(1.1);
+    }
+
+    /* Content Section */
+    .content-section {
+        padding: 50px 60px 60px;
+        position: relative;
+    }
+
+    .content-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 60px;
+        right: 60px;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    }
+
+    .play-description {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.4rem;
+        font-weight: 400;
+        line-height: 1.8;
+        color: rgba(255, 255, 255, 0.95);
+        text-align: justify;
+        margin-bottom: 3rem;
+        position: relative;
+        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+        letter-spacing: 0.5px;
+    }
+
+    /* Removed drop cap styling */
+
+    /* Gallery Section */
+    .gallery-section {
+        margin-top: 50px;
+        padding-top: 40px;
+        position: relative;
+    }
+
+    .gallery-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    }
+
+    .section-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 2.5rem;
+        font-weight: 600;
+        color: #ffd700;
+        text-align: center;
+        margin-bottom: 2.5rem;
+        position: relative;
+        text-shadow: 0 2px 8px rgba(255, 215, 0, 0.3);
+    }
+
+    .gallery-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 30px;
+        margin-bottom: 3rem;
+    }
+
+    .gallery-item {
+        position: relative;
+        border-radius: 16px;
+        overflow: hidden;
+        background: linear-gradient(45deg, rgba(139, 69, 19, 0.3), rgba(160, 82, 45, 0.2));
+        box-shadow: 
+            0 0 0 4px rgba(139, 69, 19, 0.4),
+            0 0 0 8px rgba(160, 82, 45, 0.3),
+            0 15px 30px rgba(0, 0, 0, 0.2);
+        transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        animation: galleryItemFadeIn 1s ease-out forwards;
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    .gallery-item:nth-child(1) { animation-delay: 0.2s; }
+    .gallery-item:nth-child(2) { animation-delay: 0.4s; }
+    .gallery-item:nth-child(3) { animation-delay: 0.6s; }
+    .gallery-item:nth-child(4) { animation-delay: 0.8s; }
+    .gallery-item:nth-child(5) { animation-delay: 1.0s; }
+    .gallery-item:nth-child(6) { animation-delay: 1.2s; }
+
+    .gallery-item:hover {
+        transform: translateY(-10px) scale(1.03);
+        box-shadow: 
+            0 0 0 4px rgba(139, 69, 19, 0.6),
+            0 0 0 8px rgba(160, 82, 45, 0.5),
+            0 25px 50px rgba(0, 0, 0, 0.3);
+    }
+
+    .gallery-image {
+        width: 100%;
+        height: 250px;
+        object-fit: cover;
+        transition: all 0.6s ease;
+        filter: contrast(1.1) saturate(1.1);
+    }
+
+    .gallery-item:hover .gallery-image {
+        transform: scale(1.08);
+        filter: contrast(1.2) saturate(1.3) brightness(1.1);
+    }
+
+    /* Extra Info Section */
+    .extra-info-section {
+        margin-top: 50px;
+        padding-top: 40px;
+        position: relative;
+    }
+
+    .extra-info-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    }
+
+    .info-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .info-item {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        padding: 20px 25px;
+        margin-bottom: 15px;
+        font-family: 'Crimson Text', serif;
+        font-size: 1.1rem;
+        color: rgba(255, 255, 255, 0.9);
+        position: relative;
+        transition: all 0.4s ease;
+        animation: infoItemSlideIn 0.8s ease-out forwards;
+        opacity: 0;
+        transform: translateX(-30px);
+    }
+
+    .info-item:nth-child(1) { animation-delay: 0.1s; }
+    .info-item:nth-child(2) { animation-delay: 0.2s; }
+    .info-item:nth-child(3) { animation-delay: 0.3s; }
+    .info-item:nth-child(4) { animation-delay: 0.4s; }
+    .info-item:nth-child(5) { animation-delay: 0.5s; }
+
+    .info-item:hover {
+        background: rgba(255, 255, 255, 0.08);
+        border-color: rgba(255, 215, 0, 0.3);
+        transform: translateX(10px);
+        box-shadow: 0 8px 25px rgba(255, 215, 0, 0.1);
+    }
+
+    .info-item::before {
+        content: '✨';
+        position: absolute;
+        left: -10px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 1.2rem;
+        opacity: 0.6;
+    }
+
+    /* Navigation Button */
+    .nav-section {
+        text-align: center;
+        margin-top: 60px;
+    }
+
+    .artistic-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        font-family: 'Playfair Display', serif;
+        font-size: 1.1rem;
+        font-weight: 600;
+        padding: 18px 40px;
+        background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 193, 7, 0.3));
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 2px solid rgba(255, 215, 0, 0.4);
+        border-radius: 50px;
+        color: #fff;
+        text-decoration: none;
+        box-shadow: 
+            0 8px 24px rgba(255, 215, 0, 0.2),
+            inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .artistic-btn::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transition: left 0.5s ease;
+    }
+
+    .artistic-btn:hover {
+        transform: translateY(-3px) scale(1.05);
+        box-shadow: 
+            0 15px 35px rgba(255, 215, 0, 0.3),
+            inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        border-color: rgba(255, 215, 0, 0.6);
+        background: linear-gradient(135deg, rgba(255, 215, 0, 0.3), rgba(255, 193, 7, 0.4));
+        color: #fff;
+        text-decoration: none;
+    }
+
+    .artistic-btn:hover::before {
+        left: 100%;
+    }
+
+    /* Floating Elements */
+    .floating-element {
+        position: absolute;
+        pointer-events: none;
+        opacity: 0.1;
+        animation: floatAround 15s linear infinite;
+    }
+
+    .floating-element:nth-child(1) {
+        top: 10%;
+        left: 5%;
+        font-size: 2rem;
+        animation-delay: 0s;
+        color: #ffd700;
+    }
+
+    .floating-element:nth-child(2) {
+        top: 20%;
+        right: 10%;
+        font-size: 1.5rem;
+        animation-delay: -5s;
+        color: #ffeb3b;
+    }
+
+    .floating-element:nth-child(3) {
+        bottom: 15%;
+        left: 8%;
+        font-size: 1.8rem;
+        animation-delay: -10s;
+        color: #ffc107;
+    }
+
+    /* Animations */
+    @keyframes backgroundFlow {
+        0%, 100% { transform: translateY(0px) rotate(0deg); }
+        50% { transform: translateY(-20px) rotate(2deg); }
+    }
+
+    @keyframes swirlRotate {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+
+    @keyframes pulseGlow {
+        from { opacity: 0.4; transform: translateX(-50%) scale(0.8); }
+        to { opacity: 0.8; transform: translateX(-50%) scale(1.2); }
+    }
+
+    @keyframes titleFloat {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-8px); }
+    }
+
+    @keyframes fadeInUp {
+        from { 
+            opacity: 0; 
+            transform: translateY(30px); 
+        }
+        to { 
+            opacity: 1; 
+            transform: translateY(0); 
+        }
+    }
+
+    @keyframes cardSlideIn {
+        from {
+            opacity: 0;
+            transform: translateY(60px) scale(0.95);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+    }
+
+    @keyframes shimmer {
+        0%, 100% { opacity: 0.5; }
+        50% { opacity: 1; }
+    }
+
+    @keyframes frameGlow {
+        from { 
+            box-shadow: 
+                0 0 0 8px rgba(139, 69, 19, 0.6),
+                0 0 0 12px rgba(160, 82, 45, 0.4),
+                0 0 0 16px rgba(205, 133, 63, 0.3),
+                0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+        to { 
+            box-shadow: 
+                0 0 0 8px rgba(139, 69, 19, 0.8),
+                0 0 0 12px rgba(160, 82, 45, 0.6),
+                0 0 0 16px rgba(205, 133, 63, 0.5),
+                0 25px 50px rgba(0, 0, 0, 0.4);
+        }
+    }
+
+    @keyframes floatAround {
+        0% { transform: translate(0, 0) rotate(0deg); }
+        25% { transform: translate(30px, -30px) rotate(90deg); }
+        50% { transform: translate(-20px, -60px) rotate(180deg); }
+        75% { transform: translate(-50px, -30px) rotate(270deg); }
+        100% { transform: translate(0, 0) rotate(360deg); }
+    }
+
+    @keyframes galleryItemFadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(30px) scale(0.9);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+    }
+
+    @keyframes infoItemSlideIn {
+        from {
+            opacity: 0;
+            transform: translateX(-30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    /* Responsive Design */
+    @media (max-width: 1024px) {
+        .play-title {
+            font-size: 3.5rem;
+        }
+        
+        .content-section {
+            padding: 40px 50px 50px;
+        }
+        
+        .frame-container {
+            padding: 30px;
+        }
+
+        .gallery-grid {
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .play-detail-section {
+            padding: 80px 0 100px;
+        }
+        
+        .main-container {
+            padding: 0 15px;
+        }
+        
+        .content-section {
+            padding: 30px 30px 40px;
+        }
+        
+        .frame-container {
+            padding: 20px;
+        }
+        
+    
+        
+        .artistic-btn {
+            padding: 15px 30px;
+            font-size: 1rem;
+        }
+
+        .gallery-grid {
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+
+        .section-title {
+            font-size: 2rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .play-title {
+            font-size: 2.2rem;
+        }
+        
+        .play-subtitle {
+            font-size: 1rem;
+        }
+        
+        .content-section {
+            padding: 25px 20px 30px;
+        }
+        
+        .frame-container {
+            padding: 15px;
+        } 
+        
+        .artistic-btn {
+            padding: 12px 25px;
+            font-size: 0.9rem;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+        }
+
+        .gallery-image {
+            height: 200px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="swirl-overlay"></div>
+
+<section class="play-detail-section">
+   
+    <div class="main-container">
+      
+
+        <!-- Main Content -->
+        <div class="art-gallery-card">
+            <!-- Main Image Frame -->
+            <div class="frame-container">
+                <div class="artwork-frame">
+                    <img src="{{ play.image }}" alt="{{ play.title }}" class="play-artwork">
+                </div>
+            </div>
+
+            <!-- Content Section -->
+            <div class="content-section">
+                <p class="play-description">{{ play.description }}</p>
+
+                <!-- Gallery Section -->
+                {% if play.images %}
+                <div class="gallery-section">
+                    <h2 class="section-title">Gallery</h2>
+                    <div class="gallery-grid">
+                        {% for img in play.images %}
+                        <div class="gallery-item">
+                            <img src="{{ img }}" class="gallery-image" alt="Scene from {{ play.title }}">
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+            
+                
+                <div class="nav-section">
+                    <a href="{{ url_for('plays') }}" class="artistic-btn">
+                        <span>←</span>
+                        <span>Return to Gallery</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

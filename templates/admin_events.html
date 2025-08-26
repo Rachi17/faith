@@ -1,0 +1,634 @@
+{% extends 'base.html' %}
+{% block title %}Admin - Manage Events{% endblock %}
+
+{% block css %}
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap');
+
+    .admin-section {
+        padding: 80px 0 120px;
+        position: relative;
+        min-height: 100vh;
+    }
+
+    .admin-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 100%;
+        background-image: 
+            radial-gradient(circle at 25% 25%, rgba(59, 130, 246, 0.02) 0%, transparent 50%),
+            radial-gradient(circle at 75% 75%, rgba(99, 102, 241, 0.01) 0%, transparent 50%);
+        background-size: 800px 800px, 600px 600px;
+        pointer-events: none;
+        z-index: -1;
+    }
+
+    .admin-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+    }
+
+    .glass-header {
+        font-family: 'Playfair Display', serif;
+        font-size: 3.5rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #1e40af, #3b82f6, #6366f1);
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-align: center;
+        margin-bottom: 3rem;
+        letter-spacing: -0.02em;
+        position: relative;
+        animation: slideInUp 0.8s ease-out;
+    }
+
+    .glass-header::after {
+        content: '';
+        position: absolute;
+        bottom: -15px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 120px;
+        height: 4px;
+        background: linear-gradient(90deg, #3b82f6, #6366f1, #8b5cf6);
+        border-radius: 2px;
+        box-shadow: 0 2px 15px rgba(59, 130, 246, 0.4);
+        animation: expandWidth 0.8s ease-out 0.5s both;
+    }
+
+    .admin-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 40px;
+        align-items: start;
+    }
+
+    .glass-form-container {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(25px);
+        -webkit-backdrop-filter: blur(25px);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 28px;
+        box-shadow: 
+            0 25px 50px rgba(0, 0, 0, 0.1),
+            0 12px 24px rgba(0, 0, 0, 0.08),
+            inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        padding: 40px;
+        position: relative;
+        animation: slideInUp 0.8s ease-out 0.2s both;
+        opacity: 0;
+        transform: translateY(40px);
+    }
+
+    .glass-form-container::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    }
+
+    .form-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 2rem;
+        font-weight: 600;
+        background: linear-gradient(135deg, #1e40af, #3b82f6);
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 2rem;
+        text-align: center;
+        position: relative;
+    }
+
+    .form-title::after {
+        content: '';
+        position: absolute;
+        bottom: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 60px;
+        height: 2px;
+        background: linear-gradient(90deg, #3b82f6, #6366f1);
+        border-radius: 1px;
+    }
+
+    .glass-form {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .form-group {
+        position: relative;
+    }
+
+    .glass-input, .glass-textarea, .glass-select {
+        width: 100%;
+        padding: 18px 24px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 16px;
+        color: #334155;
+        font-size: 1rem;
+        font-family: 'Inter', sans-serif;
+        font-weight: 400;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        box-sizing: border-box;
+    }
+
+    .glass-input::placeholder, .glass-textarea::placeholder {
+        color: #64748b;
+        opacity: 0.8;
+    }
+
+    .glass-input:focus, .glass-textarea:focus, .glass-select:focus {
+        outline: none;
+        background: rgba(255, 255, 255, 0.15);
+        border: 1px solid rgba(59, 130, 246, 0.5);
+        box-shadow: 
+            0 0 0 3px rgba(59, 130, 246, 0.1),
+            0 8px 25px rgba(59, 130, 246, 0.15);
+        transform: translateY(-2px);
+    }
+
+    .glass-textarea {
+        min-height: 120px;
+        resize: vertical;
+    }
+
+    .checkbox-group {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 18px 24px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 16px;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .checkbox-group:hover {
+        background: rgba(255, 255, 255, 0.12);
+    }
+
+    .glass-checkbox {
+        width: 20px;
+        height: 20px;
+        accent-color: #3b82f6;
+        cursor: pointer;
+    }
+
+    .checkbox-label {
+        color: #475569;
+        font-size: 1rem;
+        font-weight: 500;
+        cursor: pointer;
+        user-select: none;
+    }
+
+    .file-input-wrapper {
+        position: relative;
+        overflow: hidden;
+        display: inline-block;
+        width: 100%;
+    }
+
+    .glass-file-input {
+        width: 100%;
+        padding: 18px 24px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 16px;
+        color: #475569;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-align: center;
+        position: relative;
+    }
+
+    .glass-file-input:hover {
+        background: rgba(255, 255, 255, 0.12);
+        transform: translateY(-2px);
+    }
+
+    .glass-file-input input[type="file"] {
+        position: absolute;
+        opacity: 0;
+        width: 100%;
+        height: 100%;
+        cursor: pointer;
+    }
+
+    .glass-button {
+        padding: 18px 36px;
+        background: linear-gradient(135deg, #3b82f6, #6366f1);
+        border: none;
+        border-radius: 16px;
+        color: white;
+        font-size: 1.1rem;
+        font-weight: 600;
+        font-family: 'Inter', sans-serif;
+        cursor: pointer;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        box-shadow: 
+            0 8px 20px rgba(59, 130, 246, 0.3),
+            0 4px 8px rgba(0, 0, 0, 0.1);
+        position: relative;
+        overflow: hidden;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .glass-button::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transition: left 0.6s ease;
+    }
+
+    .glass-button:hover {
+        transform: translateY(-3px) scale(1.02);
+        box-shadow: 
+            0 15px 35px rgba(59, 130, 246, 0.4),
+            0 8px 15px rgba(0, 0, 0, 0.15);
+    }
+
+    .glass-button:hover::before {
+        left: 100%;
+    }
+
+    .glass-button:active {
+        transform: translateY(-1px) scale(1.01);
+    }
+
+    /* Events List Styling */
+    .glass-events-container {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(25px);
+        -webkit-backdrop-filter: blur(25px);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 28px;
+        box-shadow: 
+            0 25px 50px rgba(0, 0, 0, 0.1),
+            0 12px 24px rgba(0, 0, 0, 0.08),
+            inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        padding: 40px;
+        position: relative;
+        animation: slideInUp 0.8s ease-out 0.4s both;
+        opacity: 0;
+        transform: translateY(40px);
+    }
+
+    .glass-events-container::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    }
+
+    .events-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 2rem;
+        font-weight: 600;
+        background: linear-gradient(135deg, #1e40af, #3b82f6);
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 2rem;
+        text-align: center;
+        position: relative;
+    }
+
+    .events-title::after {
+        content: '';
+        position: absolute;
+        bottom: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 60px;
+        height: 2px;
+        background: linear-gradient(90deg, #3b82f6, #6366f1);
+        border-radius: 1px;
+    }
+
+    .events-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .event-item {
+        background: rgba(255, 255, 255, 0.08);
+        backdrop-filter: blur(15px);
+        -webkit-backdrop-filter: blur(15px);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 20px;
+        padding: 24px;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .event-item::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    }
+
+    .event-item:hover {
+        transform: translateY(-4px);
+        background: rgba(255, 255, 255, 0.12);
+        box-shadow: 
+            0 15px 30px rgba(0, 0, 0, 0.1),
+            0 8px 16px rgba(59, 130, 246, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.25);
+    }
+
+    .event-details {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+    }
+
+    .event-info {
+        flex: 1;
+    }
+
+    .event-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: #1e40af;
+        margin: 0 0 8px 0;
+        line-height: 1.3;
+    }
+
+    .event-date {
+        color: #64748b;
+        font-size: 0.95rem;
+        font-weight: 500;
+        margin: 0;
+    }
+
+    .event-actions {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+    }
+
+    .action-button {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 12px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        text-decoration: none;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+        min-width: 80px;
+    }
+
+    .delete-button {
+        background: linear-gradient(135deg, #ef4444, #dc2626);
+        color: white;
+        box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+    }
+
+    .delete-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(239, 68, 68, 0.4);
+        background: linear-gradient(135deg, #dc2626, #b91c1c);
+    }
+
+    .register-button {
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: white;
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    }
+
+    .register-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
+        background: linear-gradient(135deg, #059669, #047857);
+    }
+
+    .no-events {
+        text-align: center;
+        padding: 60px 20px;
+        color: #64748b;
+    }
+
+    .no-events-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+    }
+
+    .no-events-text {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.5rem;
+        font-weight: 500;
+        margin: 0;
+    }
+
+    /* Animations */
+    @keyframes slideInUp {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes expandWidth {
+        from { width: 0; }
+        to { width: 120px; }
+    }
+
+    /* Responsive Design */
+    @media (max-width: 1024px) {
+        .admin-grid {
+            grid-template-columns: 1fr;
+            gap: 30px;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .admin-section {
+            padding: 60px 0 100px;
+        }
+
+        .glass-header {
+            font-size: 2.8rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .admin-container {
+            padding: 0 15px;
+        }
+
+        .glass-form-container,
+        .glass-events-container {
+            padding: 30px 25px;
+        }
+
+        .form-title,
+        .events-title {
+            font-size: 1.6rem;
+        }
+
+        .event-details {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 15px;
+        }
+
+        .event-actions {
+            align-self: stretch;
+            justify-content: space-between;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .glass-header {
+            font-size: 2.2rem;
+        }
+
+        .glass-form-container,
+        .glass-events-container {
+            padding: 25px 20px;
+        }
+
+        .glass-input,
+        .glass-textarea,
+        .checkbox-group {
+            padding: 15px 20px;
+        }
+
+        .glass-button {
+            padding: 15px 30px;
+            font-size: 1rem;
+        }
+
+        .action-button {
+            padding: 8px 16px;
+            font-size: 0.85rem;
+            min-width: 70px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="admin-section">
+    <div class="admin-container">
+        <h1 class="glass-header">Manage Events</h1>
+        
+        <div class="admin-grid">
+            <!-- Add Event Form -->
+            <div class="glass-form-container">
+                <h2 class="form-title">Add New Event</h2>
+                <form action="{{ url_for('add_event') }}" method="POST" enctype="multipart/form-data" class="glass-form">
+                    <div class="form-group">
+                        <input type="text" name="title" placeholder="Event Title" class="glass-input" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <input type="date" name="date" class="glass-input" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <textarea name="description" placeholder="Event Description" class="glass-textarea" required></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <input type="url" name="form_link" placeholder="Registration Form Link (optional)" class="glass-input">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="checkbox-group">
+                            <input type="checkbox" name="has_registration" class="glass-checkbox">
+                            <span class="checkbox-label">Enable Registration</span>
+                        </label>
+                    </div>
+                    
+                    <div class="form-group">
+                        <div class="file-input-wrapper">
+                            <label class="glass-file-input">
+                                <span>Choose Event Image</span>
+                                <input type="file" name="image" accept="image/*">
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="glass-button">Add Event</button>
+                </form>
+            </div>
+
+            <!-- Events List -->
+            <div class="glass-events-container">
+                <h3 class="events-title">Existing Events</h3>
+                {% if events %}
+                    <ul class="events-list">
+                        {% for e in events %}
+                            <li class="event-item">
+                                <div class="event-details">
+                                    <div class="event-info">
+                                        <h4 class="event-title">{{ e.title }}</h4>
+                                        <p class="event-date">{{ e.date }}</p>
+                                    </div>
+                                    <div class="event-actions">
+                                        <a href="{{ url_for('delete_event', event_id=e['id']) }}" 
+                                           class="action-button delete-button"
+                                           onclick="return confirm('Are you sure you want to delete this event?')">
+                                           Delete
+                                        </a>
+                                        <a href="{{ url_for('admin_registrations') }}" 
+                                           class="action-button register-button">
+                                           Register
+                                        </a>
+                                    </div>
+                                </div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <div class="no-events">
+                        <div class="no-events-icon">📅</div>
+                        <p class="no-events-text">No events created yet.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

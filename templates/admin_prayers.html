@@ -1,0 +1,734 @@
+{% extends "base.html" %} 
+
+{% block css %}
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap');
+
+    .glass-container {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(25px);
+        -webkit-backdrop-filter: blur(25px);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 24px;
+        box-shadow: 
+            0 25px 50px rgba(0, 0, 0, 0.1),
+            0 12px 24px rgba(0, 0, 0, 0.08),
+            inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        padding: 40px;
+        margin: 40px auto;
+        max-width: 1200px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .glass-container::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    }
+
+    .glass-header {
+        font-family: 'Playfair Display', serif;
+        font-size: 3rem;
+        font-weight: 600;
+        background: linear-gradient(135deg, #1e40af, #3b82f6, #6366f1);
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-align: center;
+        margin-bottom: 2rem;
+        letter-spacing: -0.02em;
+        position: relative;
+    }
+
+    .glass-header::after {
+        content: '';
+        position: absolute;
+        bottom: -12px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 100px;
+        height: 3px;
+        background: linear-gradient(90deg, #3b82f6, #6366f1);
+        border-radius: 2px;
+        box-shadow: 0 2px 10px rgba(59, 130, 246, 0.3);
+    }
+
+    .glass-button {
+        background: rgba(59, 130, 246, 0.15);
+        backdrop-filter: blur(15px);
+        -webkit-backdrop-filter: blur(15px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 50px;
+        padding: 12px 28px;
+        color: #1e40af;
+        font-weight: 600;
+        font-size: 0.95rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        box-shadow: 
+            0 8px 20px rgba(59, 130, 246, 0.15),
+            inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+        margin-bottom: 1.5rem;
+        display: block;
+        text-align: center;
+        width: fit-content;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .glass-button::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transition: left 0.5s ease;
+    }
+
+    .glass-button:hover::after {
+        left: 100%;
+    }
+
+    .glass-button:hover {
+        transform: translateY(-2px);
+        background: rgba(59, 130, 246, 0.25);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border-color: rgba(255, 255, 255, 0.3);
+        box-shadow: 
+            0 12px 30px rgba(59, 130, 246, 0.25),
+            inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    }
+
+    /* Desktop Table Styles */
+    .desktop-table {
+        display: block;
+    }
+
+    .glass-table {
+        background: rgba(255, 255, 255, 0.03);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 
+            0 20px 40px rgba(0, 0, 0, 0.08),
+            inset 0 1px 0 rgba(255, 255, 255, 0.15);
+        width: 100%;
+    }
+
+    .glass-table-header {
+        background: rgba(255, 255, 255, 0.08);
+        backdrop-filter: blur(15px);
+        -webkit-backdrop-filter: blur(15px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    .glass-table-header th {
+        padding: 20px 16px;
+        font-family: 'Inter', sans-serif;
+        font-weight: 600;
+        font-size: 0.95rem;
+        color: #1e40af;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        border: none;
+        position: relative;
+    }
+
+    .glass-table-header th::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.3), transparent);
+    }
+
+    .glass-table tbody tr {
+        background: rgba(255, 255, 255, 0.02);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .glass-table tbody tr:hover {
+        background: rgba(255, 255, 255, 0.08);
+        backdrop-filter: blur(15px);
+        -webkit-backdrop-filter: blur(15px);
+        transform: scale(1.01);
+        box-shadow: 0 8px 25px rgba(59, 130, 246, 0.1);
+    }
+
+    .glass-table tbody td {
+        padding: 18px 16px;
+        font-size: 0.95rem;
+        color: #475569;
+        border: none;
+        vertical-align: middle;
+    }
+
+    .glass-table tbody tr:last-child {
+        border-bottom: none;
+    }
+
+    .glass-copy-button {
+        background: rgba(59, 130, 246, 0.1);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 20px;
+        padding: 8px 16px;
+        color: #3b82f6;
+        font-weight: 500;
+        font-size: 0.85rem;
+        box-shadow: 
+            0 4px 12px rgba(59, 130, 246, 0.1),
+            inset 0 1px 0 rgba(255, 255, 255, 0.15);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        cursor: pointer;
+    }
+
+    .glass-copy-button:hover {
+        background: rgba(59, 130, 246, 0.2);
+        backdrop-filter: blur(15px);
+        -webkit-backdrop-filter: blur(15px);
+        border-color: rgba(255, 255, 255, 0.25);
+        transform: translateY(-2px);
+        box-shadow: 
+            0 8px 20px rgba(59, 130, 246, 0.2),
+            inset 0 1px 0 rgba(255, 255, 255, 0.25);
+    }
+
+    /* Mobile Card Layout */
+    .mobile-cards {
+        display: none;
+    }
+
+    .prayer-card {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        padding: 24px;
+        margin-bottom: 20px;
+        box-shadow: 
+            0 15px 35px rgba(0, 0, 0, 0.08),
+            inset 0 1px 0 rgba(255, 255, 255, 0.15);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .prayer-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    }
+
+    .prayer-card:hover {
+        transform: translateY(-5px);
+        background: rgba(255, 255, 255, 0.08);
+        backdrop-filter: blur(25px);
+        -webkit-backdrop-filter: blur(25px);
+        box-shadow: 
+            0 20px 45px rgba(0, 0, 0, 0.12),
+            0 8px 20px rgba(59, 130, 246, 0.1),
+            inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        border-color: rgba(255, 255, 255, 0.15);
+    }
+
+    .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 16px;
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+
+    .card-id {
+        background: rgba(59, 130, 246, 0.15);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: #3b82f6;
+        padding: 6px 12px;
+        border-radius: 12px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        box-shadow: 
+            0 4px 8px rgba(59, 130, 246, 0.1),
+            inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    }
+
+    .card-date {
+        color: #64748b;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+
+    .card-field {
+        margin-bottom: 14px;
+    }
+
+    .card-label {
+        color: #1e40af;
+        font-weight: 600;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 6px;
+        display: block;
+        background: linear-gradient(135deg, #1e40af, #3b82f6);
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .card-value {
+        color: #475569;
+        font-size: 0.95rem;
+        line-height: 1.5;
+        word-break: break-word;
+    }
+
+    .card-message {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        padding: 16px;
+        margin-top: 8px;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    }
+
+    .card-copy-button {
+        background: rgba(59, 130, 246, 0.12);
+        backdrop-filter: blur(15px);
+        -webkit-backdrop-filter: blur(15px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 50px;
+        padding: 12px 24px;
+        color: #3b82f6;
+        font-weight: 600;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        box-shadow: 
+            0 8px 16px rgba(59, 130, 246, 0.15),
+            inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        cursor: pointer;
+        width: 100%;
+        text-align: center;
+        margin-top: 16px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .card-copy-button::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+        transition: left 0.5s ease;
+    }
+
+    .card-copy-button:hover::after {
+        left: 100%;
+    }
+
+    .card-copy-button:hover {
+        transform: translateY(-3px);
+        background: rgba(59, 130, 246, 0.2);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border-color: rgba(255, 255, 255, 0.3);
+        box-shadow: 
+            0 12px 25px rgba(59, 130, 246, 0.2),
+            inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    }
+
+    .no-requests {
+        text-align: center;
+        padding: 60px 20px;
+        background: rgba(255, 255, 255, 0.03);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        box-shadow: 
+            0 20px 40px rgba(0, 0, 0, 0.08),
+            inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    }
+
+    .no-requests p {
+        font-size: 1.2rem;
+        color: #64748b;
+        margin: 0;
+        font-style: italic;
+    }
+
+    /* Success animation */
+    @keyframes copySuccess {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+        100% { transform: scale(1); }
+    }
+
+    .copy-success {
+        animation: copySuccess 0.3s ease-out;
+    }
+
+    /* Responsive breakpoints */
+    @media (max-width: 1024px) {
+        .glass-container {
+            margin: 20px;
+            padding: 32px 24px;
+        }
+
+        .glass-table-header th,
+        .glass-table tbody td {
+            padding: 14px 10px;
+            font-size: 0.9rem;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .desktop-table {
+            display: none;
+        }
+
+        .mobile-cards {
+            display: block;
+        }
+
+        .glass-container {
+            margin: 15px;
+            padding: 28px 20px;
+            border-radius: 20px;
+        }
+
+        .glass-header {
+            font-size: 2.2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .glass-header::after {
+            width: 80px;
+            height: 2px;
+        }
+
+        .glass-button {
+            padding: 14px 32px;
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+            width: auto;
+            min-width: 200px;
+        }
+
+        .prayer-card {
+            padding: 20px;
+            margin-bottom: 16px;
+            border-radius: 16px;
+        }
+
+        .card-header {
+            margin-bottom: 14px;
+        }
+
+        .card-field {
+            margin-bottom: 12px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .glass-container {
+            margin: 10px;
+            padding: 24px 16px;
+            border-radius: 16px;
+        }
+
+        .glass-header {
+            font-size: 1.8rem;
+            margin-bottom: 1.2rem;
+        }
+
+        .glass-header::after {
+            width: 60px;
+        }
+
+        .glass-button {
+            padding: 12px 28px;
+            font-size: 0.85rem;
+            min-width: 180px;
+        }
+
+        .prayer-card {
+            padding: 18px;
+            margin-bottom: 14px;
+        }
+
+        .card-id {
+            padding: 5px 10px;
+            font-size: 0.75rem;
+        }
+
+        .card-date {
+            font-size: 0.8rem;
+        }
+
+        .card-label {
+            font-size: 0.8rem;
+        }
+
+        .card-value {
+            font-size: 0.9rem;
+        }
+
+        .card-copy-button {
+            padding: 10px 20px;
+            font-size: 0.85rem;
+        }
+
+        .no-requests {
+            padding: 40px 16px;
+        }
+
+        .no-requests p {
+            font-size: 1rem;
+        }
+    }
+
+    @media (max-width: 360px) {
+        .glass-container {
+            margin: 8px;
+            padding: 20px 12px;
+        }
+
+        .glass-header {
+            font-size: 1.6rem;
+        }
+
+        .prayer-card {
+            padding: 16px;
+        }
+
+        .card-copy-button {
+            font-size: 0.8rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="glass-container">
+    <h2 class="glass-header">Prayer Requests</h2>
+    
+    {% if requests %}
+        <!-- Copy All Button -->
+        <div class="mb-3">
+            <button class="glass-button" onclick="copyAllRequests()">Copy All Requests</button>
+        </div>
+
+        <!-- Desktop Table View -->
+        <div class="desktop-table">
+            <table class="glass-table">
+                <thead class="glass-table-header">
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Mobile</th>
+                        <th>Message</th>
+                        <th>Place</th>
+                        <th>Created At</th>
+                        <th>Copy</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for req in requests %}
+                        <tr>
+                            <td>{{ req.id }}</td>
+                            <td>{{ req.name }}</td>
+                            <td>{{ req.mobile }}</td>
+                            <td>{{ req.message }}</td>
+                            <td>{{ req.place }}</td>
+                            <td>{{ req.created_at }}</td>
+                            <td>
+                                <button class="glass-copy-button"
+                                    onclick='copyToClipboard("Name: {{ req.name }}\nMobile: {{ req.mobile }}\nPlace: {{req.place}}\nMessage: {{ req.message }}", this)'>
+                                    Copy
+                                </button>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Mobile Card View -->
+        <div class="mobile-cards">
+            {% for req in requests %}
+                <div class="prayer-card">
+                    <div class="card-header">
+                        <span class="card-id">ID: {{ req.id }}</span>
+                        <span class="card-date">{{ req.created_at }}</span>
+                    </div>
+                    
+                    <div class="card-field">
+                        <span class="card-label">Name</span>
+                        <div class="card-value">{{ req.name }}</div>
+                    </div>
+                    
+                    <div class="card-field">
+                        <span class="card-label">Mobile</span>
+                        <div class="card-value">{{ req.mobile }}</div>
+                    </div>
+                    
+                    <div class="card-field">
+                        <span class="card-label">Place</span>
+                        <div class="card-value">{{ req.place }}</div>
+                    </div>
+                    
+                    <div class="card-field">
+                        <span class="card-label">Prayer Request</span>
+                        <div class="card-value card-message">{{ req.message }}</div>
+                    </div>
+                    
+                    <button class="card-copy-button"
+                        onclick='copyToClipboard("Name: {{ req.name }}\nMobile: {{ req.mobile }}\nPlace: {{req.place}}\nMessage: {{ req.message }}", this)'>
+                        Copy Request
+                    </button>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="no-requests">
+            <p>No prayer requests yet.</p>
+        </div>
+    {% endif %}
+</div>
+
+<script>
+function copyToClipboard(text, button) {
+    navigator.clipboard.writeText(text).then(function() {
+        // Add success animation
+        button.classList.add('copy-success');
+        
+        // Show custom notification instead of alert
+        showNotification("Request copied successfully!");
+        
+        // Remove animation class after animation completes
+        setTimeout(() => {
+            button.classList.remove('copy-success');
+        }, 300);
+    }, function(err) {
+        showNotification("Failed to copy: " + err, true);
+    });
+}
+
+// Copy all requests at once
+function copyAllRequests() {
+    let rows, allText = "";
+    
+    // Check if we're in mobile view
+    if (window.innerWidth <= 768) {
+        // Mobile: get data from cards
+        let cards = document.querySelectorAll(".prayer-card");
+        cards.forEach((card) => {
+            let fields = card.querySelectorAll('.card-value');
+            let name = fields[0].innerText;
+            let mobile = fields[1].innerText;
+            let place = fields[2].innerText;
+            let message = fields[3].innerText;
+
+            allText += `Name: ${name}\nMobile: ${mobile}\nPlace: ${place}\nMessage: ${message}\n\n`;
+        });
+    } else {
+        // Desktop: get data from table
+        rows = document.querySelectorAll("table tbody tr");
+        rows.forEach((row) => {
+            let name = row.children[1].innerText;
+            let mobile = row.children[2].innerText;
+            let message = row.children[3].innerText;
+            let place = row.children[4].innerText;
+
+            allText += `Name: ${name}\nMobile: ${mobile}\nPlace: ${place}\nMessage: ${message}\n\n`;
+        });
+    }
+
+    navigator.clipboard.writeText(allText).then(function() {
+        showNotification("All requests copied successfully!");
+    }, function(err) {
+        showNotification("Failed to copy all: " + err, true);
+    });
+}
+
+// Custom notification function
+function showNotification(message, isError = false) {
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.innerHTML = message;
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: ${isError ? 'rgba(239, 68, 68, 0.15)' : 'rgba(34, 197, 94, 0.15)'};
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid ${isError ? 'rgba(239, 68, 68, 0.2)' : 'rgba(34, 197, 94, 0.2)'};
+        color: ${isError ? '#dc2626' : '#059669'};
+        padding: 16px 24px;
+        border-radius: 12px;
+        font-weight: 500;
+        font-size: 0.95rem;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        z-index: 1000;
+        opacity: 0;
+        transform: translateX(100%);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        max-width: calc(100vw - 40px);
+        word-wrap: break-word;
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Trigger animation
+    setTimeout(() => {
+        notification.style.opacity = '1';
+        notification.style.transform = 'translateX(0)';
+    }, 100);
+    
+    // Remove after 3 seconds
+    setTimeout(() => {
+        notification.style.opacity = '0';
+        notification.style.transform = 'translateX(100%)';
+        setTimeout(() => {
+            document.body.removeChild(notification);
+        }, 300);
+    }, 3000);
+}
+</script>
+{% endblock %}

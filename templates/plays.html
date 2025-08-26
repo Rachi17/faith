@@ -1,0 +1,461 @@
+{% extends 'base.html' %}
+{% block title %}Plays{% endblock %}
+
+{% block css %}
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap');
+
+    .plays-section {
+        padding: 80px 0 120px;
+        position: relative;
+    }
+
+    .plays-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 100%;
+        background-image: 
+            radial-gradient(circle at 25% 25%, rgba(59, 130, 246, 0.02) 0%, transparent 50%),
+            radial-gradient(circle at 75% 75%, rgba(99, 102, 241, 0.01) 0%, transparent 50%);
+        background-size: 800px 800px, 600px 600px;
+        pointer-events: none;
+        z-index: -1;
+    }
+
+    .glass-header {
+        font-family: 'Playfair Display', serif;
+        font-size: 4rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #1e40af, #3b82f6, #6366f1);
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-align: center;
+        margin-bottom: 4rem;
+        letter-spacing: -0.02em;
+        position: relative;
+        animation: slideInUp 0.8s ease-out;
+    }
+
+    .glass-header::after {
+        content: '';
+        position: absolute;
+        bottom: -20px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 120px;
+        height: 4px;
+        background: linear-gradient(90deg, #3b82f6, #6366f1, #8b5cf6);
+        border-radius: 2px;
+        box-shadow: 0 2px 15px rgba(59, 130, 246, 0.4);
+        animation: expandWidth 0.8s ease-out 0.5s both;
+    }
+
+    .intro-text {
+        max-width: 900px;
+        margin: 0 auto 5rem;
+        text-align: center;
+        padding: 0 20px;
+        animation: slideInUp 0.8s ease-out 0.3s both;
+    }
+
+    .intro-subtitle {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.8rem;
+        font-weight: 600;
+        color: #1e40af;
+        margin-bottom: 1.5rem;
+        letter-spacing: 0.5px;
+    }
+
+    .intro-description {
+        font-family: 'Inter', sans-serif;
+        font-size: 1.15rem;
+        line-height: 1.8;
+        color: #475569;
+        font-weight: 400;
+        text-align: justify;
+        text-justify: inter-word;
+    }
+
+    .plays-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 20px;
+    }
+
+    .plays-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 35px;
+        align-items: start;
+    }
+
+    .glass-play-card {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(25px);
+        -webkit-backdrop-filter: blur(25px);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 28px;
+        box-shadow: 
+            0 25px 50px rgba(0, 0, 0, 0.1),
+            0 12px 24px rgba(0, 0, 0, 0.08),
+            inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        overflow: hidden;
+        position: relative;
+        text-decoration: none;
+        color: inherit;
+        height: 100%;
+        animation: slideInUp 0.8s ease-out forwards;
+        opacity: 0;
+        transform: translateY(40px);
+    }
+
+    .glass-play-card:nth-child(1) { animation-delay: 0.1s; }
+    .glass-play-card:nth-child(2) { animation-delay: 0.2s; }
+    .glass-play-card:nth-child(3) { animation-delay: 0.3s; }
+    .glass-play-card:nth-child(4) { animation-delay: 0.4s; }
+    .glass-play-card:nth-child(5) { animation-delay: 0.5s; }
+    .glass-play-card:nth-child(6) { animation-delay: 0.6s; }
+
+    .glass-play-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    }
+
+    .glass-play-card:hover {
+        transform: translateY(-20px) scale(1.05);
+        box-shadow: 
+            0 40px 80px rgba(0, 0, 0, 0.15),
+            0 20px 40px rgba(59, 130, 246, 0.15),
+            inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(30px);
+        -webkit-backdrop-filter: blur(30px);
+        border: 1px solid rgba(255, 255, 255, 0.25);
+    }
+
+    .glass-play-image {
+        width: 100%;
+        height: 250px;
+        object-fit: cover;
+        border-radius: 20px 20px 0 0;
+        transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        z-index: 1;
+    }
+
+    .glass-play-card:hover .glass-play-image {
+        transform: scale(1.1);
+        filter: brightness(1.1) saturate(1.2);
+    }
+
+    .glass-play-content {
+        padding: 35px 30px;
+        position: relative;
+        z-index: 2;
+    }
+
+    .glass-play-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.8rem;
+        font-weight: 600;
+        background: linear-gradient(135deg, #1e40af, #3b82f6);
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 1rem;
+        line-height: 1.3;
+        position: relative;
+    }
+
+    .glass-play-title::after {
+        content: '';
+        position: absolute;
+        bottom: -8px;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background: linear-gradient(90deg, #3b82f6, #6366f1);
+        border-radius: 1px;
+        transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .glass-play-card:hover .glass-play-title::after {
+        width: 100%;
+    }
+
+    .glass-play-description {
+        color: #64748b;
+        font-size: 1.05rem;
+        line-height: 1.7;
+        margin: 0;
+        transition: color 0.3s ease;
+        opacity: 0.9;
+    }
+
+    .glass-play-card:hover .glass-play-description {
+        color: #475569;
+        opacity: 1;
+    }
+
+    /* Floating animation */
+    @keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-8px); }
+    }
+
+    .glass-play-card:nth-child(1) { animation: slideInUp 0.8s ease-out 0.1s forwards, float 6s ease-in-out 2s infinite; }
+    .glass-play-card:nth-child(2) { animation: slideInUp 0.8s ease-out 0.2s forwards, float 6s ease-in-out 2.5s infinite; }
+    .glass-play-card:nth-child(3) { animation: slideInUp 0.8s ease-out 0.3s forwards, float 6s ease-in-out 3s infinite; }
+    .glass-play-card:nth-child(4) { animation: slideInUp 0.8s ease-out 0.4s forwards, float 6s ease-in-out 3.5s infinite; }
+    .glass-play-card:nth-child(5) { animation: slideInUp 0.8s ease-out 0.5s forwards, float 6s ease-in-out 4s infinite; }
+    .glass-play-card:nth-child(6) { animation: slideInUp 0.8s ease-out 0.6s forwards, float 6s ease-in-out 4.5s infinite; }
+
+    /* Empty state styling */
+    .no-plays {
+        text-align: center;
+        padding: 80px 40px;
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(25px);
+        -webkit-backdrop-filter: blur(25px);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 28px;
+        box-shadow: 
+            0 25px 50px rgba(0, 0, 0, 0.1),
+            inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        animation: slideInUp 0.8s ease-out;
+    }
+
+    .no-plays h3 {
+        font-family: 'Playfair Display', serif;
+        font-size: 2.2rem;
+        background: linear-gradient(135deg, #64748b, #94a3b8);
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 1rem;
+    }
+
+    .no-plays p {
+        color: #64748b;
+        font-size: 1.1rem;
+        font-style: italic;
+        margin: 0;
+        line-height: 1.6;
+    }
+
+    /* Animation keyframes */
+    @keyframes slideInUp {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes expandWidth {
+        from {
+            width: 0;
+        }
+        to {
+            width: 120px;
+        }
+    }
+
+    /* Mobile responsiveness */
+    @media (max-width: 1200px) {
+        .plays-grid {
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 30px;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .plays-section {
+            padding: 60px 0 100px;
+        }
+
+        .glass-header {
+            font-size: 3rem;
+            margin-bottom: 3rem;
+        }
+
+        .glass-header::after {
+            width: 100px;
+        }
+
+        .intro-text {
+            margin-bottom: 4rem;
+            padding: 0 15px;
+        }
+
+        .intro-subtitle {
+            font-size: 1.5rem;
+        }
+
+        .intro-description {
+            font-size: 1.05rem;
+            text-align: center;
+        }
+
+        .plays-container {
+            padding: 0 15px;
+        }
+
+        .plays-grid {
+            grid-template-columns: 1fr;
+            gap: 25px;
+        }
+
+        .glass-play-content {
+            padding: 30px 25px;
+        }
+
+        .glass-play-title {
+            font-size: 1.6rem;
+        }
+
+        .glass-play-description {
+            font-size: 1rem;
+        }
+
+        .glass-play-image {
+            height: 220px;
+        }
+
+        .no-plays {
+            padding: 60px 30px;
+        }
+
+        .no-plays h3 {
+            font-size: 2rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .plays-section {
+            padding: 40px 0 80px;
+        }
+
+        .glass-header {
+            font-size: 2.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .glass-header::after {
+            width: 80px;
+        }
+
+        .intro-text {
+            margin-bottom: 3rem;
+        }
+
+        .intro-subtitle {
+            font-size: 1.3rem;
+        }
+
+        .intro-description {
+            font-size: 1rem;
+        }
+
+        .plays-container {
+            padding: 0 10px;
+        }
+
+        .glass-play-content {
+            padding: 25px 20px;
+        }
+
+        .glass-play-title {
+            font-size: 1.4rem;
+        }
+
+        .glass-play-description {
+            font-size: 0.95rem;
+        }
+
+        .glass-play-image {
+            height: 200px;
+        }
+
+        .no-plays {
+            padding: 50px 20px;
+        }
+
+        .no-plays h3 {
+            font-size: 1.8rem;
+        }
+
+        .no-plays p {
+            font-size: 1rem;
+        }
+    }
+
+    @media (max-width: 375px) {
+        .glass-header {
+            font-size: 2.2rem;
+        }
+
+        .plays-grid {
+            gap: 20px;
+        }
+
+        .glass-play-content {
+            padding: 20px 15px;
+        }
+
+        .glass-play-title {
+            font-size: 1.3rem;
+        }
+
+        .glass-play-image {
+            height: 180px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="plays-section">
+    <h1 class="glass-header">Our Performances</h1>
+    
+    <div class="intro-text">
+        <h2 class="intro-subtitle">Bringing the Holy Scriptures to Life</h2>
+        <p class="intro-description">
+During the Advent season, we perform plays that bring the stories of The Holy Bible to life.
+    In these plays we explore the lives of biblical characters, their struggles, and their triumphs.
+    We aim to make the stories relatable and engaging, allowing the audience to connect with the characters.
+    Our plays are designed to inspire and uplift, reminding us of the timeless messages of Faith, Hope, Love and Repentance.        </p>
+    </div>
+    
+    <div class="plays-container">
+        {% if plays %}
+            <div class="plays-grid">
+                {% for play in plays %}
+                    <a href="{{ url_for('play_detail', play_id=play.id) }}" class="glass-play-card">
+                        <img src="{{ play.image }}" class="glass-play-image" alt="{{ play.title }}">
+                        <div class="glass-play-content">
+                            <h5 class="glass-play-title">{{ play.title }}</h5>
+                            <p class="glass-play-description">{{ play.description }}</p>
+                        </div>
+                    </a>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="no-plays">
+                <h3>Sacred Performances Await</h3>
+                <p>Our inspiring theatrical productions are being lovingly prepared with devotion and care. Please return soon to discover these extraordinary spiritual performances that will touch your heart and uplift your soul.</p>
+            </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,213 @@
+{% extends 'base.html' %}
+{% block title %}About{% endblock %}
+
+{% block css %}
+<style>
+    body {
+        background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 50%, #f8fafc 100%);
+        font-family: 'Inter', sans-serif;
+        padding: 3rem 2rem;
+        color: #0f172a;
+        position: relative;
+        overflow-x: hidden;
+    }
+
+    .page-container {
+        max-width: 900px;
+        margin: 0 auto;
+        background: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(20px);
+        border-radius: 32px;
+        padding: 60px 50px;
+        box-shadow: 0 32px 64px rgba(0, 0, 0, 0.06),
+                    0 16px 32px rgba(0, 0, 0, 0.04),
+                    inset 0 1px 0 rgba(255, 255, 255, 0.7);
+        position: relative;
+        overflow: hidden;
+        animation: slideInUp 0.8s ease-out;
+    }
+
+    .image-container {
+        position: absolute;
+        top: 60px;
+        right: 80px;
+        max-width: 200px;
+        z-index: 1;
+    }
+
+    .image-container img {
+        width: 100%;
+        height: auto;
+        border-radius: 20px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        transition: transform 0.3s ease;
+    }
+
+    .image-container img:hover {
+        transform: scale(1.05);
+    }
+
+    h1 {
+        font-family: 'Playfair Display', serif;
+        font-size: 3.2rem;
+        background: linear-gradient(135deg, #1e40af, #3b82f6, #6366f1);
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 2rem;
+        font-weight: 600;
+        letter-spacing: -0.02em;
+        line-height: 1.2;
+    }
+
+    h1::after {
+        content: '';
+        display: block;
+        width: 80px;
+        height: 4px;
+        background: linear-gradient(90deg, #3b82f6, #6366f1, #8b5cf6);
+        margin-top: 16px;
+        border-radius: 2px;
+        box-shadow: 0 2px 10px rgba(59, 130, 246, 0.3);
+        animation: expandWidth 0.8s ease-out 0.5s both;
+    }
+
+    .about-section {
+        margin-top: 3rem;
+        line-height: 1.8;
+    }
+
+    .about-section p {
+        font-size: 1.2rem;
+        color: #475569;
+        margin-bottom: 2rem;
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeInUp 0.6s ease-out forwards;
+    }
+
+    .about-section p:nth-child(n) {
+        animation-delay: calc(0.2s + 0.1s * var(--i));
+    }
+
+    .about-section strong {
+        background: linear-gradient(135deg, #1e40af, #3b82f6);
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .highlight {
+        background: rgba(96, 165, 250, 0.1);
+        color: #1e40af;
+        padding: 0.4rem 0.6rem;
+        border-radius: 10px;
+        font-weight: 600;
+        border: 1px solid rgba(96, 165, 250, 0.2);
+    }
+
+    @keyframes fadeInUp {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes slideInUp {
+        from {
+            opacity: 0;
+            transform: translateY(40px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes expandWidth {
+        from {
+            width: 0;
+        }
+        to {
+            width: 80px;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .page-container {
+            padding: 40px 30px;
+        }
+
+        .image-container {
+            position: static;
+            margin-bottom: 1rem;
+            max-width: 100%;
+            text-align: center;
+        }
+
+        .image-container img {
+            width: 60%;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2.4rem;
+        }
+
+        .about-section p {
+            font-size: 1.1rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .page-container {
+            padding: 30px 20px;
+        }
+
+        h1 {
+            font-size: 2rem;
+        }
+
+        .about-section p {
+            font-size: 1rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <div class="image-container">
+        <img src="{{ url_for('static', filename='images/dove.png') }}" alt="Dove Image">
+    </div>
+
+    <h1>About Us</h1>
+
+    <div class="about-section">
+        <p style="--i:0">
+            Welcome to <strong>FAITH</strong> – <em>Forsaking All I Take Him</em>.
+        </p>
+        <p style="--i:1">
+            Our site is a place of <span class="highlight">prayer</span>, <span class="highlight">reflection</span>, and <span class="highlight">community</span>. 
+            We believe in spreading <strong>peace</strong>, <strong>kindness</strong>, and the message of faith through the Word of the Lord.
+        </p>
+        <p style="--i:2">
+            <strong>FAITH</strong> is a purely <strong>evangelistic group</strong>. 
+            We organize <span class="highlight">free medical camps</span> during the <strong>Lenten season</strong> to reach out to those in need.
+        </p>
+        <p style="--i:3">
+            <strong>Revival meetings</strong> are held across India and in select global locations throughout the year, helping people draw closer to Christ.
+        </p>
+        <p style="--i:4">
+            Through <strong>musical plays</strong>, we bring the <span class="highlight">Holy Bible to life</span>, making the Word accessible and engaging to all.
+        </p>
+        <p style="--i:5">
+            We also support the <strong>well-being of widows and orphans</strong>, standing as a pillar of love and hope in their lives.
+        </p>
+        <p style="--i:6">
+            We firmly believe: <em>"Freely you have received; freely give."</em><br>
+            <span class="highlight">We do not accept nor give money</span> for doing the Lord's Ministry.
+        </p>
+    </div>
+</div>
+{% endblock %}

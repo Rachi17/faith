@@ -1,0 +1,684 @@
+{% extends "base.html" %}
+{% block title %}POC Request{% endblock %}
+
+{% block css %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>POC Request</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            min-height: 100vh;
+        }
+
+        .poc-section {
+            padding: 80px 0 120px;
+            position: relative;
+            min-height: 100vh;
+        }
+
+        .poc-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 30% 20%, rgba(59, 130, 246, 0.03) 0%, transparent 60%),
+                radial-gradient(circle at 70% 80%, rgba(99, 102, 241, 0.02) 0%, transparent 60%),
+                radial-gradient(circle at 50% 50%, rgba(139, 92, 246, 0.01) 0%, transparent 50%);
+            background-size: 1000px 1000px, 800px 800px, 600px 600px;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .glass-header {
+            font-family: 'Playfair Display', serif;
+            font-size: 4rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #1e40af, #3b82f6, #6366f1);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-align: center;
+            margin-bottom: 1.5rem;
+            letter-spacing: -0.02em;
+            position: relative;
+            animation: slideInUp 0.8s ease-out;
+        }
+
+        .glass-header::after {
+            content: '';
+            position: absolute;
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 4px;
+            background: linear-gradient(90deg, #3b82f6, #6366f1, #8b5cf6);
+            border-radius: 2px;
+            box-shadow: 0 2px 15px rgba(59, 130, 246, 0.4);
+            animation: expandWidth 0.8s ease-out 0.5s both;
+        }
+
+        .subtitle {
+            color: #64748b;
+            font-size: 1.2rem;
+            text-align: center;
+            margin-bottom: 4rem;
+            line-height: 1.6;
+            animation: slideInUp 0.8s ease-out 0.3s both;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .poc-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 60px;
+            align-items: start;
+            margin-bottom: 4rem;
+        }
+
+        .image-section {
+            position: relative;
+            animation: slideInLeft 0.8s ease-out 0.4s both;
+            opacity: 0;
+            transform: translateX(-40px);
+        }
+
+        .poc-image {
+            width: 100%;
+            height: 450px;
+            object-fit: cover;
+            border-radius: 28px;
+            box-shadow: 
+                0 25px 50px rgba(0, 0, 0, 0.15),
+                0 12px 24px rgba(59, 130, 246, 0.1);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            z-index: 1;
+        }
+
+        .poc-image:hover {
+            transform: scale(1.05) rotateY(5deg);
+            box-shadow: 
+                0 40px 80px rgba(0, 0, 0, 0.2),
+                0 20px 40px rgba(59, 130, 246, 0.15);
+        }
+
+        .image-section::before {
+            content: '';
+            position: absolute;
+            top: -20px;
+            left: -20px;
+            right: 20px;
+            bottom: 20px;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(99, 102, 241, 0.05));
+            border-radius: 32px;
+            z-index: 0;
+            transition: all 0.5s ease;
+        }
+
+        .image-section:hover::before {
+            transform: translate(-10px, -10px);
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(99, 102, 241, 0.1));
+        }
+
+        .text-section {
+            animation: slideInRight 0.8s ease-out 0.4s both;
+            opacity: 0;
+            transform: translateX(40px);
+        }
+
+        .poc-description {
+            font-size: 1.05rem;
+            line-height: 1.7;
+            color: #475569;
+            font-weight: 400;
+            position: relative;
+            padding: 35px;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 24px;
+            box-shadow: 
+                0 20px 40px rgba(0, 0, 0, 0.08),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            margin-bottom: 2rem;
+        }
+
+        .poc-description::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+        }
+
+        .contact-section {
+            background: rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 20px;
+            padding: 25px;
+            animation: slideInRight 0.8s ease-out 0.6s both;
+            opacity: 0;
+            transform: translateX(40px);
+        }
+
+        .contact-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.4rem;
+            font-weight: 600;
+            background: linear-gradient(135deg, #1e40af, #3b82f6);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .contact-list {
+            font-size: 0.9rem;
+            color: #64748b;
+            line-height: 1.6;
+        }
+
+        .contact-item {
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .contact-item:last-child {
+            border-bottom: none;
+        }
+
+        .glass-form-container {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 32px;
+            box-shadow: 
+                0 30px 60px rgba(0, 0, 0, 0.12),
+                0 15px 30px rgba(0, 0, 0, 0.08),
+                inset 0 1px 0 rgba(255, 255, 255, 0.25);
+            padding: 50px;
+            position: relative;
+            animation: slideInUp 0.8s ease-out 0.8s both;
+            opacity: 0;
+            transform: translateY(40px);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .glass-form-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            border-radius: 32px 32px 0 0;
+        }
+
+        .form-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.2rem;
+            font-weight: 600;
+            background: linear-gradient(135deg, #1e40af, #3b82f6);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-align: center;
+            margin-bottom: 2.5rem;
+            position: relative;
+        }
+
+        .form-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(90deg, #3b82f6, #6366f1);
+            border-radius: 2px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            position: relative;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-label {
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            font-size: 1rem;
+            background: linear-gradient(135deg, #1e40af, #3b82f6);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.8rem;
+            display: block;
+            position: relative;
+        }
+
+        .glass-input {
+            width: 100%;
+            padding: 18px 24px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 16px;
+            font-size: 1.1rem;
+            color: #1e293b;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            box-shadow: 
+                0 4px 8px rgba(0, 0, 0, 0.05),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+
+        .glass-input::placeholder {
+            color: #94a3b8;
+            font-weight: 400;
+        }
+
+        .glass-input:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(59, 130, 246, 0.4);
+            box-shadow: 
+                0 8px 16px rgba(0, 0, 0, 0.1),
+                0 0 0 4px rgba(59, 130, 246, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .glass-input:hover:not(:focus) {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(255, 255, 255, 0.25);
+            transform: translateY(-1px);
+        }
+
+        .glass-submit-btn {
+            width: 100%;
+            padding: 20px 40px;
+            background: linear-gradient(135deg, #3b82f6, #6366f1, #8b5cf6);
+            border: none;
+            border-radius: 20px;
+            color: white;
+            font-family: 'Inter', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 
+                0 15px 30px rgba(59, 130, 246, 0.3),
+                0 8px 16px rgba(0, 0, 0, 0.1);
+            margin-top: 1rem;
+        }
+
+        .glass-submit-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .glass-submit-btn:hover::before {
+            left: 100%;
+        }
+
+        .glass-submit-btn:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 
+                0 25px 50px rgba(59, 130, 246, 0.4),
+                0 15px 30px rgba(0, 0, 0, 0.15);
+            background: linear-gradient(135deg, #2563eb, #4f46e5, #7c3aed);
+        }
+
+        .glass-submit-btn:active {
+            transform: translateY(-1px) scale(0.98);
+            box-shadow: 
+                0 10px 20px rgba(59, 130, 246, 0.3),
+                0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Floating animation */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .glass-form-container {
+            animation: slideInUp 0.8s ease-out 0.8s both, float 8s ease-in-out 4s infinite;
+        }
+
+        /* Animation keyframes */
+        @keyframes slideInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInLeft {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideInRight {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes expandWidth {
+            from {
+                width: 0;
+            }
+            to {
+                width: 120px;
+            }
+        }
+
+        /* Mobile responsiveness */
+        @media (max-width: 1024px) {
+            .content-grid {
+                gap: 50px;
+            }
+
+            .poc-image {
+                height: 400px;
+            }
+
+            .glass-form-container {
+                padding: 40px;
+            }
+
+            .form-row {
+                gap: 15px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .poc-section {
+                padding: 60px 0 100px;
+            }
+
+            .glass-header {
+                font-size: 3rem;
+                margin-bottom: 1rem;
+            }
+
+            .glass-header::after {
+                width: 100px;
+            }
+
+            .subtitle {
+                font-size: 1.1rem;
+                margin-bottom: 3rem;
+            }
+
+            .poc-container {
+                padding: 0 15px;
+            }
+
+            .content-grid {
+                grid-template-columns: 1fr;
+                gap: 30px;
+                margin-bottom: 3rem;
+            }
+
+            .poc-image {
+                height: 320px;
+            }
+
+            .poc-description {
+                font-size: 1rem;
+                padding: 30px 25px;
+                margin-bottom: 1.5rem;
+            }
+
+            .contact-section {
+                padding: 20px;
+            }
+
+            .glass-form-container {
+                padding: 35px 30px;
+            }
+
+            .form-title {
+                font-size: 2rem;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 0;
+                margin-bottom: 1.5rem;
+            }
+
+            .form-group {
+                margin-bottom: 1.5rem;
+            }
+
+            .glass-input {
+                padding: 16px 20px;
+                font-size: 1rem;
+            }
+
+            .glass-submit-btn {
+                padding: 18px 35px;
+                font-size: 1.1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .poc-section {
+                padding: 40px 0 80px;
+            }
+
+            .glass-header {
+                font-size: 2.5rem;
+            }
+
+            .glass-header::after {
+                width: 80px;
+            }
+
+            .subtitle {
+                font-size: 1rem;
+                margin-bottom: 2.5rem;
+            }
+
+            .poc-container {
+                padding: 0 10px;
+            }
+
+            .poc-image {
+                height: 280px;
+            }
+
+            .poc-description {
+                font-size: 0.95rem;
+                padding: 25px 20px;
+                line-height: 1.6;
+            }
+
+            .contact-section {
+                padding: 18px 15px;
+            }
+
+            .contact-title {
+                font-size: 1.2rem;
+            }
+
+            .contact-list {
+                font-size: 0.85rem;
+            }
+
+            .glass-form-container {
+                padding: 30px 20px;
+            }
+
+            .form-title {
+                font-size: 1.8rem;
+            }
+
+            .form-group {
+                margin-bottom: 1.2rem;
+            }
+
+            .glass-input {
+                padding: 14px 18px;
+                font-size: 0.95rem;
+            }
+
+            .glass-submit-btn {
+                padding: 16px 30px;
+                font-size: 1rem;
+            }
+        }
+
+        @media (max-width: 375px) {
+            .glass-header {
+                font-size: 2.2rem;
+            }
+
+            .poc-image {
+                height: 250px;
+            }
+
+            .poc-description {
+                padding: 20px 15px;
+            }
+
+            .glass-form-container {
+                padding: 25px 15px;
+            }
+
+            .glass-input {
+                padding: 12px 16px;
+            }
+
+            .glass-submit-btn {
+                padding: 14px 25px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <section class="poc-section">
+        <h1 class="glass-header">POC Request</h1>
+        <p class="subtitle">
+            Share your details with us to request a POC.<br>
+            We will connect with you soon.
+        </p>
+        
+        <div class="poc-container">
+            <!-- Image & Description Section -->
+            <div class="content-grid">
+                <div class="image-section">
+                    <img src="{{ url_for('static', filename='images/poc.png') }}" class="poc-image" alt="POC Request">                </div>
+                <div class="text-section">
+                    <div class="poc-description">
+                        We, the FAITH group come to you with the proposal of enacting the play 'Passion Of Christ' in your church during the Lenten period, i.e. from March 2020 to April 2020 before Easter. We would request you to kindly bare your ground/auditorium with the seating arrangements, Stage, and lights. Sound, to and fro travel, props and actors we will manage. We do this show free of cost. We will not ask anything monetarily. Our aim is to spread the Word of God to all, through plays. This play is in Marathi language. We have also staged different characters of Bible, like NOAH, JOSEPH, MOSES, JONAH, RUTH AND SAMSON.
+                    </div>
+                    <div class="contact-section">
+                        <h3 class="contact-title">Contact Details</h3>
+                        <div class="contact-list">
+                            <div class="contact-item">1. Wendrich Soares: 9920838679</div>
+                            <div class="contact-item">2. Laksya Sharma: 9820820410</div>
+                            <div class="contact-item">3. Anil D'cruz: 9323185006</div>
+                            <div class="contact-item">4. Wavelle Pimenta: 7506019517</div>
+                            <div class="contact-item">5. Bobston Soares: 9920657510</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Request Form -->
+            <form method="POST" class="glass-form-container">
+                <h2 class="form-title">Submit Your Request</h2>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Full Name</label>
+                        <input type="text" name="name" class="glass-input" placeholder="Enter your full name" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Place</label>
+                        <input type="text" name="place" class="glass-input" placeholder="Enter your location" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Church</label>
+                        <input type="text" name="church" class="glass-input" placeholder="Enter your church name (optional)">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Contact Number</label>
+                        <input type="tel" name="contact" class="glass-input" placeholder="Enter your contact number" required>
+                    </div>
+                </div>
+
+                <button type="submit" class="glass-submit-btn">
+                    Submit Request
+                </button>
+            </form>
+        </div>
+    </section>
+</body>
+</html>
+{% endblock %}

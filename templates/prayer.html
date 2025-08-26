@@ -1,0 +1,371 @@
+{% extends 'base.html' %} 
+{% block title %}Prayer Request{% endblock %}
+
+{% block css %}
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap');
+
+    .glass-form-container {
+        max-width: 600px;
+        margin: 60px auto;
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(25px);
+        -webkit-backdrop-filter: blur(25px);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 28px;
+        box-shadow: 
+            0 25px 50px rgba(0, 0, 0, 0.1),
+            0 12px 24px rgba(0, 0, 0, 0.08),
+            inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        padding: 50px 40px;
+        position: relative;
+        overflow: hidden;
+        animation: slideInUp 0.8s ease-out;
+    }
+
+    .glass-form-container::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    }
+
+    .glass-form-header {
+        font-family: 'Playfair Display', serif;
+        font-size: 2.5rem;
+        font-weight: 600;
+        background: linear-gradient(135deg, #1e40af, #3b82f6, #6366f1);
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-align: center;
+        margin-bottom: 2.5rem;
+        letter-spacing: -0.02em;
+        position: relative;
+    }
+
+    .glass-form-header::after {
+        content: '';
+        position: absolute;
+        bottom: -15px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80px;
+        height: 3px;
+        background: linear-gradient(90deg, #3b82f6, #6366f1);
+        border-radius: 2px;
+        box-shadow: 0 2px 10px rgba(59, 130, 246, 0.3);
+    }
+
+    .glass-form {
+        display: flex;
+        flex-direction: column;
+        gap: 25px;
+    }
+
+    .glass-form-group {
+        position: relative;
+    }
+
+    .glass-form-label {
+        display: block;
+        font-family: 'Inter', sans-serif;
+        font-weight: 600;
+        font-size: 0.95rem;
+        color: #1e40af;
+        margin-bottom: 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .glass-form-input,
+    .glass-form-textarea {
+        width: 100%;
+        padding: 18px 20px;
+        background: rgba(255, 255, 255, 0.08);
+        backdrop-filter: blur(15px);
+        -webkit-backdrop-filter: blur(15px);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 16px;
+        box-shadow: 
+            0 8px 20px rgba(0, 0, 0, 0.05),
+            inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        font-family: 'Inter', sans-serif;
+        font-size: 1rem;
+        color: #475569;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        resize: none;
+    }
+
+    .glass-form-input:focus,
+    .glass-form-textarea:focus {
+        outline: none;
+        background: rgba(255, 255, 255, 0.12);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(59, 130, 246, 0.3);
+        box-shadow: 
+            0 12px 30px rgba(59, 130, 246, 0.1),
+            inset 0 1px 0 rgba(255, 255, 255, 0.15),
+            0 0 0 3px rgba(59, 130, 246, 0.1);
+        transform: translateY(-2px);
+    }
+
+    .glass-form-input::placeholder,
+    .glass-form-textarea::placeholder {
+        color: rgba(100, 116, 139, 0.6);
+        font-style: italic;
+    }
+
+    .glass-form-textarea {
+        min-height: 120px;
+        max-height: 200px;
+        resize: vertical;
+    }
+
+    .glass-form-button {
+        background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(99, 102, 241, 0.2));
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 50px;
+        padding: 18px 40px;
+        color: #1e40af;
+        font-family: 'Inter', sans-serif;
+        font-weight: 700;
+        font-size: 1.1rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        box-shadow: 
+            0 15px 35px rgba(59, 130, 246, 0.2),
+            inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+        align-self: center;
+        margin-top: 10px;
+    }
+
+    .glass-form-button::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+        transition: left 0.6s ease;
+    }
+
+    .glass-form-button:hover::before {
+        left: 100%;
+    }
+
+    .glass-form-button:hover {
+        transform: translateY(-3px) scale(1.02);
+        background: linear-gradient(135deg, rgba(59, 130, 246, 0.3), rgba(99, 102, 241, 0.3));
+        backdrop-filter: blur(25px);
+        -webkit-backdrop-filter: blur(25px);
+        border-color: rgba(255, 255, 255, 0.3);
+        box-shadow: 
+            0 20px 45px rgba(59, 130, 246, 0.3),
+            inset 0 1px 0 rgba(255, 255, 255, 0.4);
+    }
+
+    .glass-form-button:active {
+        transform: translateY(-1px) scale(1.01);
+        box-shadow: 
+            0 10px 25px rgba(59, 130, 246, 0.25),
+            inset 0 1px 0 rgba(255, 255, 255, 0.35);
+    }
+
+    /* Floating label animation */
+    .floating-label {
+        position: relative;
+    }
+
+    .floating-label .glass-form-input:focus + .glass-form-label,
+    .floating-label .glass-form-input:not(:placeholder-shown) + .glass-form-label,
+    .floating-label .glass-form-textarea:focus + .glass-form-label,
+    .floating-label .glass-form-textarea:not(:placeholder-shown) + .glass-form-label {
+        transform: translateY(-35px) scale(0.85);
+        color: #3b82f6;
+    }
+
+    /* Success message styling */
+    .glass-success {
+        background: rgba(34, 197, 94, 0.1);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(34, 197, 94, 0.2);
+        border-radius: 16px;
+        padding: 20px;
+        margin-bottom: 20px;
+        color: #059669;
+        font-weight: 500;
+        text-align: center;
+        box-shadow: 
+            0 10px 25px rgba(34, 197, 94, 0.1),
+            inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    }
+
+    /* Animation keyframes */
+    @keyframes slideInUp {
+        from {
+            opacity: 0;
+            transform: translateY(40px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes pulse {
+        0%, 100% {
+            box-shadow: 
+                0 15px 35px rgba(59, 130, 246, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        }
+        50% {
+            box-shadow: 
+                0 20px 40px rgba(59, 130, 246, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.4);
+        }
+    }
+
+    .glass-form-button:hover {
+        animation: pulse 2s infinite;
+    }
+
+    /* Responsive design */
+    @media (max-width: 768px) {
+        .glass-form-container {
+            margin: 40px 20px;
+            padding: 40px 30px;
+        }
+
+        .glass-form-header {
+            font-size: 2.2rem;
+        }
+
+        .glass-form-input,
+        .glass-form-textarea {
+            padding: 16px 18px;
+        }
+
+        .glass-form-button {
+            padding: 16px 35px;
+            font-size: 1rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .glass-form-container {
+            margin: 30px 15px;
+            padding: 35px 25px;
+        }
+
+        .glass-form-header {
+            font-size: 2rem;
+        }
+
+        .glass-form-input,
+        .glass-form-textarea {
+            padding: 14px 16px;
+        }
+
+        .glass-form-button {
+            padding: 14px 30px;
+            font-size: 0.95rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="glass-form-container">
+    <h2 class="glass-form-header">Submit Your Prayer Request</h2>
+    
+    <!-- Success message if needed -->
+    {% if success %}
+        <div class="glass-success">
+            {{ success }}
+        </div>
+    {% endif %}
+    
+    <form method="POST" class="glass-form">
+        <div class="glass-form-group">
+            <label class="glass-form-label">Name:</label>
+            <input type="text" 
+                   name="name" 
+                   required 
+                   class="glass-form-input"
+                   placeholder="Enter your full name">
+        </div>
+
+        <div class="glass-form-group">
+            <label class="glass-form-label">Mobile:</label>
+            <input type="text" 
+                   name="mobile" 
+                   required 
+                   class="glass-form-input"
+                   placeholder="Enter your mobile number">
+        </div>
+        <div class="glass-form-group">
+            <label class="glass-form-label">Place:</label>
+            <input type="text" 
+                   name="place" 
+                   required class="glass-form-input"
+                   placeholder="Enter your place">
+        </div>
+        <div class="glass-form-group">
+            <label class="glass-form-label">Prayer Request:</label>
+            <textarea name="message" 
+                      rows="4" 
+                      required 
+                      class="glass-form-textarea"
+                      placeholder="Share your prayer request with us..."></textarea>
+        </div>
+
+        <button type="submit" class="glass-form-button">
+            Submit Prayer Request
+        </button>
+        
+    </form>
+    
+</div>
+
+<script>
+// Add smooth focus transitions
+document.querySelectorAll('.glass-form-input, .glass-form-textarea').forEach(input => {
+    input.addEventListener('focus', function() {
+        this.parentElement.style.transform = 'scale(1.02)';
+        this.parentElement.style.transition = 'transform 0.3s ease';
+    });
+    
+    input.addEventListener('blur', function() {
+        this.parentElement.style.transform = 'scale(1)';
+    });
+});
+
+// Add form submission animation
+document.querySelector('.glass-form').addEventListener('submit', function(e) {
+    const button = document.querySelector('.glass-form-button');
+    button.innerHTML = 'Submitting...';
+    button.style.background = 'linear-gradient(135deg, rgba(34, 197, 94, 0.2), rgba(16, 185, 129, 0.2))';
+    
+    // Re-enable after a moment (in case of validation errors)
+    setTimeout(() => {
+        if (button.innerHTML === 'Submitting...') {
+            button.innerHTML = 'Submit Prayer Request';
+            button.style.background = 'linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(99, 102, 241, 0.2))';
+        }
+    }, 3000);
+});
+</script>
+{% endblock %}

@@ -1,0 +1,629 @@
+{% extends 'base.html' %}
+{% block title %}Events{% endblock %}
+
+{% block css %}
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap');
+
+    .events-section {
+        padding: 80px 0 120px;
+        position: relative;
+        min-height: 100vh;
+    }
+
+    .events-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 100%;
+        background-image: 
+            radial-gradient(circle at 20% 30%, rgba(168, 85, 247, 0.03) 0%, transparent 50%),
+            radial-gradient(circle at 80% 70%, rgba(59, 130, 246, 0.02) 0%, transparent 50%),
+            radial-gradient(circle at 40% 80%, rgba(236, 72, 153, 0.015) 0%, transparent 50%);
+        background-size: 900px 900px, 700px 700px, 800px 800px;
+        pointer-events: none;
+        z-index: -1;
+    }
+
+    .glass-header {
+        font-family: 'Playfair Display', serif;
+        font-size: 4rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #7c3aed, #3b82f6, #ec4899);
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-align: center;
+        margin-bottom: 4rem;
+        letter-spacing: -0.02em;
+        position: relative;
+        animation: slideInUp 0.8s ease-out;
+    }
+
+    .glass-header::after {
+        content: '';
+        position: absolute;
+        bottom: -20px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 140px;
+        height: 4px;
+        background: linear-gradient(90deg, #7c3aed, #3b82f6, #ec4899);
+        border-radius: 2px;
+        box-shadow: 0 2px 20px rgba(124, 58, 237, 0.4);
+        animation: expandWidth 0.8s ease-out 0.5s both;
+    }
+
+    .events-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 50px 40px 60px;
+        background: rgba(255, 255, 255, 0.04);
+        backdrop-filter: blur(40px);
+        -webkit-backdrop-filter: blur(40px);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 40px;
+        box-shadow: 
+            0 40px 80px rgba(0, 0, 0, 0.08),
+            0 20px 40px rgba(124, 58, 237, 0.06),
+            inset 0 1px 0 rgba(255, 255, 255, 0.15),
+            inset 0 0 40px rgba(255, 255, 255, 0.02);
+        position: relative;
+        animation: containerSlideIn 1.2s ease-out;
+    }
+
+    .events-container::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, rgba(124, 58, 237, 0.3), rgba(59, 130, 246, 0.3), rgba(236, 72, 153, 0.3), transparent);
+        border-radius: 40px 40px 0 0;
+    }
+
+    .events-container::after {
+        content: '';
+        position: absolute;
+        top: -1px;
+        left: -1px;
+        right: -1px;
+        bottom: -1px;
+        background: linear-gradient(135deg, 
+            rgba(124, 58, 237, 0.1) 0%, 
+            rgba(59, 130, 246, 0.05) 30%, 
+            rgba(236, 72, 153, 0.08) 70%, 
+            rgba(124, 58, 237, 0.06) 100%);
+        border-radius: 41px;
+        z-index: -1;
+        opacity: 0;
+        transition: opacity 0.5s ease;
+    }
+
+    .events-container:hover::after {
+        opacity: 1;
+    }
+
+    .events-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+        gap: 40px;
+        align-items: start;
+    }
+
+    .glass-event-card {
+        background: rgba(255, 255, 255, 0.06);
+        backdrop-filter: blur(30px);
+        -webkit-backdrop-filter: blur(30px);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        border-radius: 32px;
+        box-shadow: 
+            0 30px 60px rgba(0, 0, 0, 0.12),
+            0 15px 30px rgba(124, 58, 237, 0.08),
+            inset 0 1px 0 rgba(255, 255, 255, 0.25);
+        transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        overflow: hidden;
+        position: relative;
+        text-decoration: none;
+        color: inherit;
+        height: 100%;
+        animation: slideInUp 0.8s ease-out forwards;
+        opacity: 0;
+        transform: translateY(50px);
+    }
+
+    .glass-event-card:nth-child(1) { animation-delay: 0.1s; }
+    .glass-event-card:nth-child(2) { animation-delay: 0.2s; }
+    .glass-event-card:nth-child(3) { animation-delay: 0.3s; }
+    .glass-event-card:nth-child(4) { animation-delay: 0.4s; }
+    .glass-event-card:nth-child(5) { animation-delay: 0.5s; }
+    .glass-event-card:nth-child(6) { animation-delay: 0.6s; }
+
+    .glass-event-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .glass-event-card:hover::before {
+        opacity: 1;
+    }
+
+    .glass-event-card:hover {
+        transform: translateY(-25px) scale(1.03);
+        box-shadow: 
+            0 50px 100px rgba(0, 0, 0, 0.18),
+            0 25px 50px rgba(124, 58, 237, 0.15),
+            0 12px 24px rgba(236, 72, 153, 0.1),
+            inset 0 1px 0 rgba(255, 255, 255, 0.35);
+        background: rgba(255, 255, 255, 0.12);
+        backdrop-filter: blur(35px);
+        -webkit-backdrop-filter: blur(35px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .event-image-container {
+        position: relative;
+        overflow: hidden;
+        height: 280px;
+        border-radius: 24px 24px 0 0;
+    }
+
+    .glass-event-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        z-index: 1;
+    }
+
+    .glass-event-card:hover .glass-event-image {
+        transform: scale(1.15);
+        filter: brightness(1.15) saturate(1.3) contrast(1.1);
+    }
+
+    .event-date-badge {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        border-radius: 16px;
+        padding: 12px 18px;
+        font-family: 'Inter', sans-serif;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #7c3aed;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        z-index: 2;
+        box-shadow: 0 8px 32px rgba(124, 58, 237, 0.15);
+        transition: all 0.3s ease;
+    }
+
+    .glass-event-card:hover .event-date-badge {
+        transform: scale(1.05);
+        background: rgba(124, 58, 237, 0.95);
+        color: white;
+        box-shadow: 0 12px 40px rgba(124, 58, 237, 0.3);
+    }
+
+    .glass-event-content {
+        padding: 40px 35px;
+        position: relative;
+        z-index: 2;
+    }
+
+    .glass-event-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 2rem;
+        font-weight: 600;
+        background: linear-gradient(135deg, #7c3aed, #3b82f6, #ec4899);
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 1.2rem;
+        line-height: 1.3;
+        position: relative;
+        transition: all 0.3s ease;
+    }
+
+    .glass-event-title::after {
+        content: '';
+        position: absolute;
+        bottom: -10px;
+        left: 0;
+        width: 0;
+        height: 3px;
+        background: linear-gradient(90deg, #7c3aed, #3b82f6, #ec4899);
+        border-radius: 2px;
+        transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .glass-event-card:hover .glass-event-title::after {
+        width: 100%;
+    }
+
+    .event-details {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        margin-bottom: 1.5rem;
+    }
+
+    .event-detail-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: #64748b;
+        font-size: 0.95rem;
+        font-weight: 500;
+        transition: color 0.3s ease;
+    }
+
+    .glass-event-card:hover .event-detail-item {
+        color: #475569;
+    }
+
+    .event-icon {
+        width: 18px;
+        height: 18px;
+        opacity: 0.8;
+        color: #7c3aed;
+    }
+
+    .glass-event-description {
+        color: #64748b;
+        font-size: 1.05rem;
+        line-height: 1.8;
+        margin: 0;
+        transition: color 0.3s ease;
+        opacity: 0.9;
+    }
+
+    .glass-event-card:hover .glass-event-description {
+        color: #475569;
+        opacity: 1;
+    }
+
+    .event-cta {
+        position: absolute;
+        bottom: 25px;
+        right: 25px;
+        background: linear-gradient(135deg, #7c3aed, #3b82f6);
+        color: white;
+        border: none;
+        border-radius: 20px;
+        padding: 12px 24px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        opacity: 0;
+        transform: translateY(20px);
+        transition: all 0.4s ease;
+        cursor: pointer;
+        box-shadow: 0 8px 25px rgba(124, 58, 237, 0.3);
+    }
+
+    .glass-event-card:hover .event-cta {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .event-cta:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 35px rgba(124, 58, 237, 0.4);
+    }
+
+    /* Floating animation */
+    @keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-12px); }
+    }
+
+    .glass-event-card:nth-child(1) { animation: slideInUp 0.8s ease-out 0.1s forwards, float 7s ease-in-out 2s infinite; }
+    .glass-event-card:nth-child(2) { animation: slideInUp 0.8s ease-out 0.2s forwards, float 7s ease-in-out 2.8s infinite; }
+    .glass-event-card:nth-child(3) { animation: slideInUp 0.8s ease-out 0.3s forwards, float 7s ease-in-out 3.6s infinite; }
+    .glass-event-card:nth-child(4) { animation: slideInUp 0.8s ease-out 0.4s forwards, float 7s ease-in-out 4.4s infinite; }
+
+    /* Empty state styling */
+    .no-events {
+        text-align: center;
+        padding: 100px 50px;
+        background: rgba(255, 255, 255, 0.06);
+        backdrop-filter: blur(30px);
+        -webkit-backdrop-filter: blur(30px);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        border-radius: 32px;
+        box-shadow: 
+            0 30px 60px rgba(0, 0, 0, 0.12),
+            inset 0 1px 0 rgba(255, 255, 255, 0.25);
+        animation: slideInUp 0.8s ease-out;
+        position: relative;
+    }
+
+    .no-events::before {
+        content: '✨';
+        font-size: 4rem;
+        display: block;
+        margin-bottom: 1.5rem;
+        animation: float 3s ease-in-out infinite;
+    }
+
+    .no-events h3 {
+        font-family: 'Playfair Display', serif;
+        font-size: 2.5rem;
+        background: linear-gradient(135deg, #64748b, #94a3b8, #cbd5e1);
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 1.5rem;
+        font-weight: 600;
+    }
+
+    .no-events p {
+        color: #64748b;
+        font-size: 1.2rem;
+        font-style: italic;
+        margin: 0;
+        line-height: 1.6;
+    }
+
+    /* Animation keyframes */
+    @keyframes slideInUp {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes containerSlideIn {
+        from {
+            opacity: 0;
+            transform: translateY(30px) scale(0.95);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+    }
+
+    @keyframes expandWidth {
+        from {
+            width: 0;
+        }
+        to {
+            width: 140px;
+        }
+    }
+
+    @keyframes pulse {
+        0%, 100% {
+            box-shadow: 0 0 0 0 rgba(124, 58, 237, 0.4);
+        }
+        50% {
+            box-shadow: 0 0 0 15px rgba(124, 58, 237, 0);
+        }
+    }
+
+    /* Mobile responsiveness */
+    @media (max-width: 1200px) {
+        .events-grid {
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 35px;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .events-section {
+            padding: 60px 0 100px;
+        }
+
+        .glass-header {
+            font-size: 3.2rem;
+            margin-bottom: 3rem;
+        }
+
+        .glass-header::after {
+            width: 120px;
+        }
+
+        .events-container {
+            padding: 40px 20px 50px;
+            border-radius: 30px;
+        }
+
+        .events-grid {
+            grid-template-columns: 1fr;
+            gap: 30px;
+        }
+
+        .glass-event-content {
+            padding: 35px 30px;
+        }
+
+        .glass-event-title {
+            font-size: 1.8rem;
+        }
+
+        .glass-event-description {
+            font-size: 1rem;
+        }
+
+        .event-image-container {
+            height: 240px;
+        }
+
+        .no-events {
+            padding: 80px 40px;
+        }
+
+        .no-events h3 {
+            font-size: 2.2rem;
+        }
+
+        .no-events p {
+            font-size: 1.1rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .events-section {
+            padding: 40px 0 80px;
+        }
+
+        .glass-header {
+            font-size: 2.8rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .glass-header::after {
+            width: 100px;
+        }
+
+        .events-container {
+            padding: 30px 15px 40px;
+            border-radius: 25px;
+        }
+
+        .events-grid {
+            grid-template-columns: 1fr;
+            gap: 25px;
+        }
+
+        .glass-event-content {
+            padding: 30px 25px;
+        }
+
+        .glass-event-title {
+            font-size: 1.6rem;
+        }
+
+        .glass-event-description {
+            font-size: 0.95rem;
+        }
+
+        .event-image-container {
+            height: 220px;
+        }
+
+        .event-date-badge {
+            padding: 10px 15px;
+            font-size: 0.8rem;
+        }
+
+        .no-events {
+            padding: 60px 25px;
+        }
+
+        .no-events::before {
+            font-size: 3rem;
+        }
+
+        .no-events h3 {
+            font-size: 2rem;
+        }
+
+        .no-events p {
+            font-size: 1rem;
+        }
+    }
+
+    @media (max-width: 375px) {
+        .glass-header {
+            font-size: 2.4rem;
+        }
+
+        .events-grid {
+            gap: 20px;
+        }
+
+        .glass-event-content {
+            padding: 25px 20px;
+        }
+
+        .glass-event-title {
+            font-size: 1.4rem;
+        }
+
+        .event-image-container {
+            height: 200px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="events-section">
+    <h1 class="glass-header">Upcoming Events</h1>
+    <div class="events-container">
+        {% if events %}
+            <div class="events-grid">
+                {% for e in events %}
+                    <a href="{{ url_for('event_detail', event_id=e.id) }}" class="glass-event-card">
+                        <div class="event-image-container">
+                            {% if e.image_path %}
+                                <img src="{{ url_for('static', filename='uploads/' + e.image_path) }}" class="glass-event-image" alt="{{ e.title }}">
+                            {% else %}
+                                <div class="glass-event-image" style="background: linear-gradient(135deg, #7c3aed, #3b82f6, #ec4899); display: flex; align-items: center; justify-content: center; color: white; font-size: 3rem;">✨</div>
+                            {% endif %}
+                            <div class="event-date-badge">
+                                {{ e.date.strftime('%b %d') if e.date else 'TBD' }}
+                            </div>
+                        </div>
+                        <div class="glass-event-content">
+                            <h5 class="glass-event-title">{{ e.title }}</h5>
+                            <div class="event-details">
+                                <div class="event-detail-item">
+                                    <svg class="event-icon" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd" />
+                                    </svg>
+                                    <span>{{ e.date.strftime('%B %d, %Y') if e.date else 'Date to be announced' }}</span>
+                                </div>
+                                {% if e.time %}
+                                <div class="event-detail-item">
+                                    <svg class="event-icon" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd" />
+                                    </svg>
+                                    <span>{{ e.time }}</span>
+                                </div>
+                                {% endif %}
+                                {% if e.location %}
+                                <div class="event-detail-item">
+                                    <svg class="event-icon" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
+                                    </svg>
+                                    <span>{{ e.location }}</span>
+                                </div>
+                                {% endif %}
+                            </div>
+                            {% if e.description %}
+                                <p class="glass-event-description">{{ e.description }}</p>
+                            {% endif %}
+                            <button class="event-cta">Learn More</button>
+                        </div>
+                    </a>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="no-events">
+                <h3>Exciting Events Coming Soon</h3>
+                <p>We're preparing amazing spiritual events and experiences for our community. Stay tuned for announcements about upcoming gatherings, workshops, and special celebrations!</p>
+            </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
